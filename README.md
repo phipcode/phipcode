@@ -1,39 +1,41 @@
-### Hi there and welcome!👋
+# Hi, I'm Phi! 👋
 
-## 🌱 Currently Learning
+I'm a Cloud Engineer specializing in **Azure Cloud**, with a focus on **Infrastructure as Code** using Bicep and Terraform. I spend most of my time working across **Azure DevOps** and **GitHub**, helping teams deliver reliable cloud solutions and streamline their DevOps pipelines.
 
-I believe in continuous learning and staying updated with the latest technologies. Currently, I'm exploring:
+Currently, I'm on a journey exploring and learning more about tech and programming—always eager to pick up new skills and share knowledge with the community!
 
-- [Docker]
-- [Azure Pipelines]
+---
 
-## 📫 Let's Connect!
+## 🛠️ Tech Stack
 
-- LinkedIn: [[Phi Pham](https://www.linkedin.com/in/phi-pham-4070b397/)]
-- Email: [phipcode@gmail.com]
+- **Cloud**: Azure
+- **Infrastructure as Code**: Bicep, Terraform
+- **DevOps**: Azure DevOps, GitHub
 
-Feel free to reach out if you want to collaborate, discuss technology, or just have a friendly chat!
+---
 
-## 💬 Get in Touch
+## 📈 GitHub Stats
 
-I'm always open to new ideas and collaborations. If you have a project or an idea you'd like to discuss, or if you just want to chat, feel free to drop me a message.
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=phipcode&show_icons=true&theme=dark" alt="phipcode's GitHub stats" height="160" />
+  <img src="https://github-readme-streak-stats.herokuapp.com?user=phipcode&theme=dark&date_format=M%20j%5B%2C%20Y%5D" alt="GitHub Streak" height="160"/>
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=phipcode&layout=compact&theme=dark" alt="Top Languages" height="160"/>
+</p>
 
-Let's build something amazing together! 🚀
+---
 
-<!--
-**phipcode/phipcode** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-Here are some ideas to get you started:
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+## 📝 Recent Blog Posts
 
+<!-- BLOG-POST-LIST:START -->
+<!-- BLOG-POST-LIST:END -->
 
-<a href="https://github.com/phipcode">
-  <img align="center" src="https://github-readme-stats.vercel.app/api?username=phipcode&show_icons=true&theme=dark&hide=stars" />
-</a>
+---
+
+## 📫 Connect with Me
+
+- [LinkedIn](https://www.linkedin.com/in/phi-pham-4070b397)
+- [Blog](https://phiptech.com)
+
+---
+
+> 💡 “Learning never exhausts the mind.” — Leonardo da Vinci
