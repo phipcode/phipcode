@@ -1,0 +1,9 @@
+title: Phi's AI Generated Blog
+description: Azure, DevOps, Proxmox, and more
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Optional but helpful:
+markdown: kramdown

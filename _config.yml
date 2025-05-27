@@ -1,0 +1,39 @@
+title: "Phi's AI-Powered Tech Chronicles"
+description: "Exploring Azure, DevOps, and Beyond — Powered by AI, Inspired by Curiosity"
+theme: minima
+baseurl: "/phipcode"
+url: "https://phipcode.github.io"
+future: true
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  # - jekyll-tagging
+  - jekyll-paginate
+
+# Markdown and syntax highlighting
+markdown: kramdown
+highlighter: rouge
+
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+
+# Pagination
+paginate: 2
+paginate_path: "/page:num"
+
+# Layouts
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: post
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: default

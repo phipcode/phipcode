@@ -1,0 +1,99 @@
+---
+layout: default
+---
+
+<div class="home-intro">
+  <h1>Welcome to {{ site.title }}</h1>
+  <p>{{ site.description }}</p>
+</div>
+
+<!-- Featured Post Section -->
+{% assign featured_post = site.posts | where_exp: "post", "post.featured == true" | first %}
+{% if featured_post %}
+<div class="featured-post">
+  <h2>🌟 Featured Post</h2>
+  <article>
+    <h3><a href="{{ featured_post.url | relative_url }}">{{ featured_post.title }}</a></h3>
+    <p>{{ featured_post.excerpt | strip_html | truncatewords: 35 }}</p>
+    <a href="{{ featured_post.url | relative_url }}" class="read-more">Read featured post →</a>
+  </article>
+</div>
+{% endif %}
+
+<div class="posts-list">
+  {% if paginator.posts %}
+    {% for post in paginator.posts %}
+      <article class="post-preview">
+        <!-- New Badge -->
+        {% assign post_age = site.time | date: '%s' | minus: post.date | date: '%s' | divided_by: 86400 %}
+        {% if post_age < 7 %}<span class="new-badge">NEW</span>{% endif %}
+        
+        <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+        
+        <!-- Meta Line -->
+        <div class="post-meta">
+          <time datetime="{{ post.date | date_to_xmlschema }}">
+            {{ post.date | date: "%B %d, %Y" }}
+          </time>
+          <span class="reading-time">
+            {% assign words = post.content | number_of_words %}
+            {% if words < 360 %}• 1 min read{% else %}• {{ words | divided_by: 180 }} min read{% endif %}
+          </span>
+          
+          {% if post.tags.size > 0 %}
+            <div class="post-tags">
+              {% for tag in post.tags %}
+                <a href="/tags/#{{ tag | slugify }}">#{{ tag }}</a>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        
+        {% if post.image %}
+        <div class="post-image">
+          <img src="{{ post.image }}" alt="{{ post.title }}" loading="lazy">
+        </div>
+        {% endif %}
+        
+        <p class="post-excerpt">{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
+        
+        <a class="read-more" href="{{ post.url | relative_url }}">Continue Reading →</a>
+      </article>
+    {% endfor %}
+  {% else %}
+    <p>No posts found.</p>
+  {% endif %}
+</div>
+
+<!-- Pagination -->
+<nav class="pagination">
+  {% if paginator.next_page %}
+    <a class="older-posts" href="{{ paginator.next_page_path | relative_url }}">
+      ← Older Posts
+    </a>
+  {% else %}
+    <span class="disabled">← Older Posts</span>
+  {% endif %}
+
+  <span class="page-number">
+    Page {{ paginator.page }} of {{ paginator.total_pages }}
+  </span>
+
+  {% for page in (1..paginator.total_pages) %}
+    {% if page == paginator.page %}
+      <span class="active">{{ page }}</span>
+    {% elsif page == 1 %}
+      <a href="{{ '/' | relative_url }}">1</a>
+    {% else %}
+      <a href="{{ site.paginate_path | replace: ':num', page | relative_url }}">{{ page }}</a>
+    {% endif %}
+  {% endfor %}
+
+  {% if paginator.previous_page %}
+    <a class="newer-posts" href="{{ paginator.previous_page_path | relative_url }}">
+      Newer Posts →
+    </a>
+  {% else %}
+    <span class="disabled">Newer Posts →</span>
+  {% endif %}
+</nav>
