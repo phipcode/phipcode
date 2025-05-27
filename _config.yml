@@ -22,7 +22,7 @@ kramdown:
     css_class: 'highlight'
 
 # Pagination
-paginate: 2
+paginate: 10
 paginate_path: "/page:num"
 
 # Layouts
