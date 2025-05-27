@@ -1,5 +1,4 @@
 ---
-{% raw %}---
 title: "How to use Terra test using GitHub actions"
 date: "2025-05-27 22:14:47"
 tags: ["azure", "Hcl", "iac", "tutorial"]
