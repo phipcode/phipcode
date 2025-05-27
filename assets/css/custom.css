@@ -185,13 +185,6 @@ body {
     margin-left: 0.5rem;
 }
 
-/* Tags */
-.post-tags a {
-  background: #f1f1f1;
-  padding: 0.2rem 0.4rem;
-  border-radius: 3px;
-  font-size: 0.8rem;
-}
 
 
 /* Syntax highlighting */
