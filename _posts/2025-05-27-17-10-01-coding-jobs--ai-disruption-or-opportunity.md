@@ -1,4 +1,5 @@
 ---
+layout: post
 title: "Coding Jobs & AI: Disruption or Opportunity?"
 date: "2025-05-27 17:09:47"
 tags: ["trends", "future-tech", "predictions"]
@@ -13,10 +14,12 @@ description: "How Coding Jobs & AI: Disruption or Opportunity? could reshape the
 ---
 
 ## Table of Contents
-1. [Current State](#current-state)  
-2. [Emerging Trends](#emerging-trends)  
-3. [Predictions](#predictions)  
-4. [How to Prepare](#how-to-prepare)  
+- [Coding Jobs \& AI: Disruption or Opportunity?](#coding-jobs--ai-disruption-or-opportunity)
+  - [Table of Contents](#table-of-contents)
+  - [Current State](#current-state)
+  - [Emerging Trends](#emerging-trends)
+  - [Predictions](#predictions)
+  - [How to Prepare](#how-to-prepare)
 ---
 
 ## Current State

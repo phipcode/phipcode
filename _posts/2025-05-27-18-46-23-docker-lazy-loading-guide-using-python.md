@@ -1,5 +1,5 @@
 ---
-{% raw %}---
+layout: post
 title: "Docker Lazy Loading Guide Using Python"
 date: "2025-05-27 18:46:01"
 tags: ["docker", "python", "tutorial"]
@@ -15,14 +15,21 @@ description: "A step-by-step guide on implementing lazy loading with Docker usin
 
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [Prerequisites](#prerequisites)
-3. [Architecture Overview](#architecture-overview)
-4. [Step-by-Step Guide](#step-by-step-guide)
-5. [Code Example](#code-example)
-6. [Cleanup](#cleanup)
-7. [Conclusion](#conclusion)
-8. [Further Reading](#further-reading)
+- [Docker Lazy Loading Guide Using Python](#docker-lazy-loading-guide-using-python)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Prerequisites](#prerequisites)
+  - [Architecture Overview](#architecture-overview)
+  - [Step-by-Step Guide](#step-by-step-guide)
+    - [Step 1: Create a Dockerfile](#step-1-create-a-dockerfile)
+    - [Step 2: Create a Python Application](#step-2-create-a-python-application)
+    - [Step 3: Create requirements.txt](#step-3-create-requirementstxt)
+    - [Step 4: Build the Docker Image](#step-4-build-the-docker-image)
+    - [Step 5: Run the Docker Container](#step-5-run-the-docker-container)
+  - [Code Example](#code-example)
+  - [Cleanup](#cleanup)
+  - [Conclusion](#conclusion)
+  - [Further Reading](#further-reading)
 
 ---
 

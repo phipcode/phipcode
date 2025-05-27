@@ -1,4 +1,5 @@
 ---
+layout: post
 title: "Creating modules in bicep step by step"
 date: "2025-05-27"
 tags: ["azure", "terraform", "iac", "tutorial"]
