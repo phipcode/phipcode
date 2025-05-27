@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Running azure devops agent using azure container instance | Phi's AI-Powered Tech Chronicles</title>
+  <meta name="description" content="Exploring Azure, DevOps, and Beyond — Powered by AI, Inspired by Curiosity" />
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Running azure devops agent using azure container instance | Phi’s AI-Powered Tech Chronicles</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Running azure devops agent using azure container instance" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Introduction Azure DevOps is a platform that provides development and collaboration tools to create and ship software. One of the key components of Azure DevOps is the build and release pipeline, which uses agents to execute jobs. In this post, we will explore how to run an Azure DevOps agent inside an Azure Container Instance (ACI) leveraging Infrastructure as Code (IaC) with Terraform. This approach allows for dynamic scaling and eliminates the overhead of managing Virtual Machines. Prerequisites Before we dive into the setup process, ensure you have the following prerequisites in place: Azure Subscription: You need an active Azure subscription. Terraform: Install Terraform on your local machine. Follow the official documentation for installation instructions. Azure CLI: Ensure you have the Azure CLI installed. You can download it from here. Azure DevOps Organization: Create an Azure DevOps organization if you haven’t done so already. Step-by-Step Guide Step 1: Create a Service Principal Create a Service Principal to allow Terraform to interact with Azure resources. Replace your-app-name and adjust the --role and --scopes according to your requirements. az ad sp create-for-rbac --name your-app-name --role Contributor --scopes /subscriptions/{subscription-id} Step 2: Create a Terraform Configuration Now, let’s write the Terraform configuration to set up an Azure Container Instance that runs an Azure DevOps agent. Create a file named main.tf and add the following code. Step 3: Initialize Terraform Navigate to the directory where your main.tf file is located and run the following command to initialize Terraform: terraform init Step 4: Plan the Terraform Deployment Run the Terraform plan command to check what resources will be created: terraform plan Step 5: Apply the Terraform Deployment Deploy the resources by executing the following command: terraform apply Confirm with yes when prompted. Code Example provider &quot;azurerm&quot; { features {} } resource &quot;azurerm_resource_group&quot; &quot;rg&quot; { name = &quot;devops-agent-rg&quot; location = &quot;East US&quot; } resource &quot;azurerm_container_group&quot; &quot;devops_agent&quot; { name = &quot;devops-agent-container&quot; location = azurerm_resource_group.rg.location resource_group_name = azurerm_resource_group.rg.name os_type = &quot;Linux&quot; container { name = &quot;agent&quot; image = &quot;mcr.microsoft.com/azure-pipelines/vsts-agent:latest&quot; cpu = &quot;1&quot; memory = &quot;1.5&quot; # Set the necessary environment variables for Azure DevOps agent configuration environment_variables = { &quot;AGENT_URL&quot; = &quot;https://dev.azure.com/your organization&quot; &quot;AGENT_TOKEN&quot; = &quot;your_personal_access_token&quot; &quot;AGENT_NAME&quot; = &quot;my-agent&quot; } ports { port = 80 protocol = &quot;TCP&quot; } commands = [ &quot;/bin/bash&quot;, &quot;-c&quot;, &quot;run.sh&quot; ] } ip_address_type = &quot;public&quot; dns_name_label = &quot;devopsagent&quot; } Step 6: Manage the Container Instance Once the Azure DevOps agent is up and running, you can monitor the container instance using the Azure Portal or Azure CLI. To view logs or get the current status, you can use: az container show --resource-group devops-agent-rg --name devops-agent-container --query &quot;instanceView.state&quot; -o table Conclusion Running Azure DevOps agents within Azure Container Instances offers numerous benefits, including lower overhead and the ability to scale resources dynamically. By using Terraform for IaC, we can manage and deploy our infrastructure in a repeatable and consistent manner. This setup can significantly enhance the flexibility and efficiency of your CI/CD processes. Now that you have your Azure DevOps agent running in ACI, you can leverage it for automated builds and releases as part of your DevOps pipeline." />
+<meta property="og:description" content="Introduction Azure DevOps is a platform that provides development and collaboration tools to create and ship software. One of the key components of Azure DevOps is the build and release pipeline, which uses agents to execute jobs. In this post, we will explore how to run an Azure DevOps agent inside an Azure Container Instance (ACI) leveraging Infrastructure as Code (IaC) with Terraform. This approach allows for dynamic scaling and eliminates the overhead of managing Virtual Machines. Prerequisites Before we dive into the setup process, ensure you have the following prerequisites in place: Azure Subscription: You need an active Azure subscription. Terraform: Install Terraform on your local machine. Follow the official documentation for installation instructions. Azure CLI: Ensure you have the Azure CLI installed. You can download it from here. Azure DevOps Organization: Create an Azure DevOps organization if you haven’t done so already. Step-by-Step Guide Step 1: Create a Service Principal Create a Service Principal to allow Terraform to interact with Azure resources. Replace your-app-name and adjust the --role and --scopes according to your requirements. az ad sp create-for-rbac --name your-app-name --role Contributor --scopes /subscriptions/{subscription-id} Step 2: Create a Terraform Configuration Now, let’s write the Terraform configuration to set up an Azure Container Instance that runs an Azure DevOps agent. Create a file named main.tf and add the following code. Step 3: Initialize Terraform Navigate to the directory where your main.tf file is located and run the following command to initialize Terraform: terraform init Step 4: Plan the Terraform Deployment Run the Terraform plan command to check what resources will be created: terraform plan Step 5: Apply the Terraform Deployment Deploy the resources by executing the following command: terraform apply Confirm with yes when prompted. Code Example provider &quot;azurerm&quot; { features {} } resource &quot;azurerm_resource_group&quot; &quot;rg&quot; { name = &quot;devops-agent-rg&quot; location = &quot;East US&quot; } resource &quot;azurerm_container_group&quot; &quot;devops_agent&quot; { name = &quot;devops-agent-container&quot; location = azurerm_resource_group.rg.location resource_group_name = azurerm_resource_group.rg.name os_type = &quot;Linux&quot; container { name = &quot;agent&quot; image = &quot;mcr.microsoft.com/azure-pipelines/vsts-agent:latest&quot; cpu = &quot;1&quot; memory = &quot;1.5&quot; # Set the necessary environment variables for Azure DevOps agent configuration environment_variables = { &quot;AGENT_URL&quot; = &quot;https://dev.azure.com/your organization&quot; &quot;AGENT_TOKEN&quot; = &quot;your_personal_access_token&quot; &quot;AGENT_NAME&quot; = &quot;my-agent&quot; } ports { port = 80 protocol = &quot;TCP&quot; } commands = [ &quot;/bin/bash&quot;, &quot;-c&quot;, &quot;run.sh&quot; ] } ip_address_type = &quot;public&quot; dns_name_label = &quot;devopsagent&quot; } Step 6: Manage the Container Instance Once the Azure DevOps agent is up and running, you can monitor the container instance using the Azure Portal or Azure CLI. To view logs or get the current status, you can use: az container show --resource-group devops-agent-rg --name devops-agent-container --query &quot;instanceView.state&quot; -o table Conclusion Running Azure DevOps agents within Azure Container Instances offers numerous benefits, including lower overhead and the ability to scale resources dynamically. By using Terraform for IaC, we can manage and deploy our infrastructure in a repeatable and consistent manner. This setup can significantly enhance the flexibility and efficiency of your CI/CD processes. Now that you have your Azure DevOps agent running in ACI, you can leverage it for automated builds and releases as part of your DevOps pipeline." />
+<link rel="canonical" href="http://localhost:4000/phipcode/2025/05/27/running-azure-devops-agent-using-azure-container-instance.html" />
+<meta property="og:url" content="http://localhost:4000/phipcode/2025/05/27/running-azure-devops-agent-using-azure-container-instance.html" />
+<meta property="og:site_name" content="Phi’s AI-Powered Tech Chronicles" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-05-27T00:00:00+10:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Running azure devops agent using azure container instance" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2025-05-27T00:00:00+10:00","datePublished":"2025-05-27T00:00:00+10:00","description":"Introduction Azure DevOps is a platform that provides development and collaboration tools to create and ship software. One of the key components of Azure DevOps is the build and release pipeline, which uses agents to execute jobs. In this post, we will explore how to run an Azure DevOps agent inside an Azure Container Instance (ACI) leveraging Infrastructure as Code (IaC) with Terraform. This approach allows for dynamic scaling and eliminates the overhead of managing Virtual Machines. Prerequisites Before we dive into the setup process, ensure you have the following prerequisites in place: Azure Subscription: You need an active Azure subscription. Terraform: Install Terraform on your local machine. Follow the official documentation for installation instructions. Azure CLI: Ensure you have the Azure CLI installed. You can download it from here. Azure DevOps Organization: Create an Azure DevOps organization if you haven’t done so already. Step-by-Step Guide Step 1: Create a Service Principal Create a Service Principal to allow Terraform to interact with Azure resources. Replace your-app-name and adjust the --role and --scopes according to your requirements. az ad sp create-for-rbac --name your-app-name --role Contributor --scopes /subscriptions/{subscription-id} Step 2: Create a Terraform Configuration Now, let’s write the Terraform configuration to set up an Azure Container Instance that runs an Azure DevOps agent. Create a file named main.tf and add the following code. Step 3: Initialize Terraform Navigate to the directory where your main.tf file is located and run the following command to initialize Terraform: terraform init Step 4: Plan the Terraform Deployment Run the Terraform plan command to check what resources will be created: terraform plan Step 5: Apply the Terraform Deployment Deploy the resources by executing the following command: terraform apply Confirm with yes when prompted. Code Example provider &quot;azurerm&quot; { features {} } resource &quot;azurerm_resource_group&quot; &quot;rg&quot; { name = &quot;devops-agent-rg&quot; location = &quot;East US&quot; } resource &quot;azurerm_container_group&quot; &quot;devops_agent&quot; { name = &quot;devops-agent-container&quot; location = azurerm_resource_group.rg.location resource_group_name = azurerm_resource_group.rg.name os_type = &quot;Linux&quot; container { name = &quot;agent&quot; image = &quot;mcr.microsoft.com/azure-pipelines/vsts-agent:latest&quot; cpu = &quot;1&quot; memory = &quot;1.5&quot; # Set the necessary environment variables for Azure DevOps agent configuration environment_variables = { &quot;AGENT_URL&quot; = &quot;https://dev.azure.com/your organization&quot; &quot;AGENT_TOKEN&quot; = &quot;your_personal_access_token&quot; &quot;AGENT_NAME&quot; = &quot;my-agent&quot; } ports { port = 80 protocol = &quot;TCP&quot; } commands = [ &quot;/bin/bash&quot;, &quot;-c&quot;, &quot;run.sh&quot; ] } ip_address_type = &quot;public&quot; dns_name_label = &quot;devopsagent&quot; } Step 6: Manage the Container Instance Once the Azure DevOps agent is up and running, you can monitor the container instance using the Azure Portal or Azure CLI. To view logs or get the current status, you can use: az container show --resource-group devops-agent-rg --name devops-agent-container --query &quot;instanceView.state&quot; -o table Conclusion Running Azure DevOps agents within Azure Container Instances offers numerous benefits, including lower overhead and the ability to scale resources dynamically. By using Terraform for IaC, we can manage and deploy our infrastructure in a repeatable and consistent manner. This setup can significantly enhance the flexibility and efficiency of your CI/CD processes. Now that you have your Azure DevOps agent running in ACI, you can leverage it for automated builds and releases as part of your DevOps pipeline.","headline":"Running azure devops agent using azure container instance","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/phipcode/2025/05/27/running-azure-devops-agent-using-azure-container-instance.html"},"url":"http://localhost:4000/phipcode/2025/05/27/running-azure-devops-agent-using-azure-container-instance.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link rel="stylesheet" href="/phipcode/assets/css/custom.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="/phipcode/assets/favicon.ico">
+
+  <script>
+    (function () {
+      const theme = localStorage.getItem('theme');
+      if (theme) document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+  <header class="site-header container">
+    <h1 class="site-title"><a href="/phipcode/">Phi's AI-Powered Tech Chronicles</a></h1>
+    <p class="site-description">Exploring Azure, DevOps, and Beyond — Powered by AI, Inspired by Curiosity</p>
+    <nav class="site-nav">
+      <a href="/phipcode/">Home</a>
+      <a href="/phipcode/about/">About</a>
+      <a href="/phipcode/tags/">Tags</a>
+      <a href="/phipcode/contact/">Contact</a>
+      <button id="theme-toggle">🌓</button>
+    </nav>
+  </header>
+
+  <main class="site-main container">
+    <article class="post">
+  <header>
+    <h1>Running azure devops agent using azure container instance</h1>
+    <p class="post-meta">
+      May 27, 2025 &bull;
+       &bull;
+      
+      
+      3 min read
+    </p>
+    
+      <p class="tags">
+        
+          <a href="/tags/#azure" class="tag">azure</a>
+        
+          <a href="/tags/#terraform" class="tag">terraform</a>
+        
+          <a href="/tags/#iac" class="tag">iac</a>
+        
+      </p>
+    
+  </header>
+
+  <section class="post-content">
+    <h2 id="introduction">Introduction</h2>
+
+<p>Azure DevOps is a platform that provides development and collaboration tools to create and ship software. One of the key components of Azure DevOps is the build and release pipeline, which uses agents to execute jobs. In this post, we will explore how to run an Azure DevOps agent inside an Azure Container Instance (ACI) leveraging Infrastructure as Code (IaC) with Terraform. This approach allows for dynamic scaling and eliminates the overhead of managing Virtual Machines.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before we dive into the setup process, ensure you have the following prerequisites in place:</p>
+
+<ol>
+  <li><strong>Azure Subscription</strong>: You need an active Azure subscription.</li>
+  <li><strong>Terraform</strong>: Install Terraform on your local machine. Follow the <a href="https://www.terraform.io/downloads.html">official documentation</a> for installation instructions.</li>
+  <li><strong>Azure CLI</strong>: Ensure you have the Azure CLI installed. You can download it from <a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli">here</a>.</li>
+  <li><strong>Azure DevOps Organization</strong>: Create an Azure DevOps organization if you haven’t done so already.</li>
+</ol>
+
+<h2 id="step-by-step-guide">Step-by-Step Guide</h2>
+
+<h3 id="step-1-create-a-service-principal">Step 1: Create a Service Principal</h3>
+
+<p>Create a Service Principal to allow Terraform to interact with Azure resources. Replace <code class="language-plaintext highlighter-rouge">your-app-name</code> and adjust the <code class="language-plaintext highlighter-rouge">--role</code> and <code class="language-plaintext highlighter-rouge">--scopes</code> according to your requirements.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>az ad sp create-for-rbac <span class="nt">--name</span> your-app-name <span class="nt">--role</span> Contributor <span class="nt">--scopes</span> /subscriptions/<span class="o">{</span>subscription-id<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="step-2-create-a-terraform-configuration">Step 2: Create a Terraform Configuration</h3>
+
+<p>Now, let’s write the Terraform configuration to set up an Azure Container Instance that runs an Azure DevOps agent. Create a file named <code class="language-plaintext highlighter-rouge">main.tf</code> and add the following code.</p>
+
+<h3 id="step-3-initialize-terraform">Step 3: Initialize Terraform</h3>
+
+<p>Navigate to the directory where your <code class="language-plaintext highlighter-rouge">main.tf</code> file is located and run the following command to initialize Terraform:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>terraform init
+</code></pre></div></div>
+
+<h3 id="step-4-plan-the-terraform-deployment">Step 4: Plan the Terraform Deployment</h3>
+
+<p>Run the Terraform plan command to check what resources will be created:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>terraform plan
+</code></pre></div></div>
+
+<h3 id="step-5-apply-the-terraform-deployment">Step 5: Apply the Terraform Deployment</h3>
+
+<p>Deploy the resources by executing the following command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>terraform apply
+</code></pre></div></div>
+
+<p>Confirm with <code class="language-plaintext highlighter-rouge">yes</code> when prompted.</p>
+
+<h2 id="code-example">Code Example</h2>
+
+<div class="language-terraform highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">provider</span> <span class="s2">"azurerm"</span> <span class="p">{</span>
+  <span class="nx">features</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="k">resource</span> <span class="s2">"azurerm_resource_group"</span> <span class="s2">"rg"</span> <span class="p">{</span>
+  <span class="nx">name</span>     <span class="o">=</span> <span class="s2">"devops-agent-rg"</span>
+  <span class="nx">location</span> <span class="o">=</span> <span class="s2">"East US"</span>
+<span class="p">}</span>
+
+<span class="k">resource</span> <span class="s2">"azurerm_container_group"</span> <span class="s2">"devops_agent"</span> <span class="p">{</span>
+  <span class="nx">name</span>                <span class="o">=</span> <span class="s2">"devops-agent-container"</span>
+  <span class="nx">location</span>            <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">rg</span><span class="p">.</span><span class="nx">location</span>
+  <span class="nx">resource_group_name</span> <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">rg</span><span class="p">.</span><span class="nx">name</span>
+  <span class="nx">os_type</span>             <span class="o">=</span> <span class="s2">"Linux"</span>
+
+  <span class="nx">container</span> <span class="p">{</span>
+    <span class="nx">name</span>   <span class="o">=</span> <span class="s2">"agent"</span>
+    <span class="nx">image</span>  <span class="o">=</span> <span class="s2">"mcr.microsoft.com/azure-pipelines/vsts-agent:latest"</span>
+    <span class="nx">cpu</span>    <span class="o">=</span> <span class="s2">"1"</span>
+    <span class="nx">memory</span> <span class="o">=</span> <span class="s2">"1.5"</span>
+    
+    <span class="c1"># Set the necessary environment variables for Azure DevOps agent configuration</span>
+    <span class="nx">environment_variables</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="s2">"AGENT_URL"</span>          <span class="p">=</span> <span class="s2">"https://dev.azure.com/your organization"</span>
+      <span class="s2">"AGENT_TOKEN"</span>        <span class="p">=</span> <span class="s2">"your_personal_access_token"</span>
+      <span class="s2">"AGENT_NAME"</span>         <span class="p">=</span> <span class="s2">"my-agent"</span>
+    <span class="p">}</span>
+
+    <span class="nx">ports</span> <span class="p">{</span>
+      <span class="nx">port</span>     <span class="o">=</span> <span class="mi">80</span>
+      <span class="nx">protocol</span> <span class="o">=</span> <span class="s2">"TCP"</span>
+    <span class="p">}</span>
+
+    <span class="nx">commands</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="s2">"/bin/bash"</span><span class="p">,</span>
+      <span class="s2">"-c"</span><span class="p">,</span>
+      <span class="s2">"run.sh"</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+
+  <span class="nx">ip_address_type</span> <span class="o">=</span> <span class="s2">"public"</span>
+  <span class="nx">dns_name_label</span>  <span class="o">=</span> <span class="s2">"devopsagent"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="step-6-manage-the-container-instance">Step 6: Manage the Container Instance</h3>
+
+<p>Once the Azure DevOps agent is up and running, you can monitor the container instance using the Azure Portal or Azure CLI. To view logs or get the current status, you can use:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>az container show <span class="nt">--resource-group</span> devops-agent-rg <span class="nt">--name</span> devops-agent-container <span class="nt">--query</span> <span class="s2">"instanceView.state"</span> <span class="nt">-o</span> table
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Running Azure DevOps agents within Azure Container Instances offers numerous benefits, including lower overhead and the ability to scale resources dynamically. By using Terraform for IaC, we can manage and deploy our infrastructure in a repeatable and consistent manner. This setup can significantly enhance the flexibility and efficiency of your CI/CD processes.</p>
+
+<p>Now that you have your Azure DevOps agent running in ACI, you can leverage it for automated builds and releases as part of your DevOps pipeline.</p>
+
+  </section>
+
+  <div class="social-share">
+    <p>Share this post:</p>
+    <a href="https://twitter.com/intent/tweet?url=http://localhost:4000/2025/05/27/running-azure-devops-agent-using-azure-container-instance.html&text=Running azure devops agent using azure container instance" target="_blank">Twitter</a>
+    <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/2025/05/27/running-azure-devops-agent-using-azure-container-instance.html" target="_blank">LinkedIn</a>
+  </div>
+</article>
+
+  </main>
+
+  <footer class="site-footer container">
+    <p>&copy; 2025 Phi's AI-Powered Tech Chronicles. Built with ❤️ using Jekyll and AI.</p>
+  </footer>
+
+  <script>
+    const toggleButton = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+
+    toggleButton.addEventListener('click', () => {
+      const current = root.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+  </script>
+</body>
+</html>

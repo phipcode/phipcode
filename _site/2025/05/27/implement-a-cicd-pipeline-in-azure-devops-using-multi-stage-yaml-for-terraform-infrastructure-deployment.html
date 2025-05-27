@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Implement a CI/CD Pipeline in Azure DevOps Using Multi-Stage YAML for Terraform Infrastructure Deployment | Phi's AI-Powered Tech Chronicles</title>
+  <meta name="description" content="Exploring Azure, DevOps, and Beyond — Powered by AI, Inspired by Curiosity" />
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Implement a CI/CD Pipeline in Azure DevOps Using Multi-Stage YAML for Terraform Infrastructure Deployment | Phi’s AI-Powered Tech Chronicles</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Implement a CI/CD Pipeline in Azure DevOps Using Multi-Stage YAML for Terraform Infrastructure Deployment" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Introduction Continuous Integration and Continuous Delivery (CI/CD) are essential practices in modern software development, enabling teams to automate the deployment of applications and infrastructure. In this post, we’ll set up a CI/CD pipeline in Azure DevOps using multi-stage YAML to deploy Terraform-managed infrastructure. By the end of this guide, you’ll understand how to automate your infrastructure provisioning and management efficiently. Prerequisites Before we begin, ensure you have the following tools and resources in place: An Azure account with appropriate permissions to create resources An Azure DevOps organization and project A basic understanding of Terraform and its configuration files Azure DevOps CLI and Terraform installed locally for local testing Step-by-Step Guide Step 1: Set Up Your Azure DevOps Project Create a New Azure DevOps Project: Navigate to your Azure DevOps organization. Click on “New Project” and provide a name (e.g., terraform-ci-cd). Choose visibility settings for your project (Public or Private). Create a Repository: Inside your newly created project, go to the “Repos” tab and create a new repository. Initialize it with a README file if required. Step 2: Add Terraform Configuration Files Next, create the Terraform configuration files that define your infrastructure. Create a folder named terraform in your repository. Create a file named main.tf inside the terraform directory. Example main.tf: provider &quot;azurerm&quot; { features {} } resource &quot;azurerm_resource_group&quot; &quot;example&quot; { name = &quot;example-resource-group&quot; location = &quot;East US&quot; } Step 3: Create a Service Connection in Azure DevOps To allow Azure DevOps to deploy resources in your Azure account: Go to your project settings in Azure DevOps. Navigate to “Service connections”. Click on “New service connection” and choose “Azure Resource Manager”. Follow the prompts to authenticate and create the service connection with your Azure subscription. Step 4: Create the CI/CD Pipeline Using Multi-Stage YAML In your repository, create a new file named azure-pipelines.yml. This file will define your CI/CD pipeline. trigger: - main stages: - stage: Build displayName: &#39;Build Stage&#39; jobs: - job: TerraformInit displayName: &#39;Terraform Init&#39; pool: vmImage: &#39;ubuntu-latest&#39; steps: - script: | terraform init displayName: &#39;Initialize Terraform&#39; - job: TerraformPlan displayName: &#39;Terraform Plan&#39; dependsOn: TerraformInit pool: vmImage: &#39;ubuntu-latest&#39; steps: - script: | terraform plan -out=tfplan displayName: &#39;Plan Terraform Changes&#39; - stage: Deploy displayName: &#39;Deploy Stage&#39; dependsOn: Build jobs: - job: TerraformApply displayName: &#39;Terraform Apply&#39; pool: vmImage: &#39;ubuntu-latest&#39; steps: - script: | terraform apply -auto-approve tfplan displayName: &#39;Apply Terraform Changes&#39; Step 5: Commit and Push Your Changes Add your changes to Git. Commit your files with a meaningful message, e.g., “Add Terraform files and pipeline configuration”. Push your changes to the Azure DevOps repository. Step 6: Run Your Pipeline Navigate to the “Pipelines” tab in Azure DevOps. You should see your pipeline triggered automatically by your latest commit. Monitor the pipeline’s progress, and check for any errors. If successful, you will have deployed the infrastructure defined in your main.tf file! Code Example Here’s an overview of the Terraform code used in this tutorial: provider &quot;azurerm&quot; { features {} } resource &quot;azurerm_resource_group&quot; &quot;example&quot; { name = &quot;example-resource-group&quot; location = &quot;East US&quot; } This simple Terraform configuration creates a Resource Group in Azure. You can extend this to include more resources as needed for your infrastructure. Conclusion In this blog post, we walked through the process of setting up a CI/CD pipeline in Azure DevOps using multi-stage YAML for Terraform infrastructure deployment. This configuration allows you to automate the steps involved in deploying your infrastructure, ensuring consistency and reliability. With continuous integration and delivery practices, you can focus on building higher-quality applications while Azure DevOps manages your infrastructure deployment. Happy coding!" />
+<meta property="og:description" content="Introduction Continuous Integration and Continuous Delivery (CI/CD) are essential practices in modern software development, enabling teams to automate the deployment of applications and infrastructure. In this post, we’ll set up a CI/CD pipeline in Azure DevOps using multi-stage YAML to deploy Terraform-managed infrastructure. By the end of this guide, you’ll understand how to automate your infrastructure provisioning and management efficiently. Prerequisites Before we begin, ensure you have the following tools and resources in place: An Azure account with appropriate permissions to create resources An Azure DevOps organization and project A basic understanding of Terraform and its configuration files Azure DevOps CLI and Terraform installed locally for local testing Step-by-Step Guide Step 1: Set Up Your Azure DevOps Project Create a New Azure DevOps Project: Navigate to your Azure DevOps organization. Click on “New Project” and provide a name (e.g., terraform-ci-cd). Choose visibility settings for your project (Public or Private). Create a Repository: Inside your newly created project, go to the “Repos” tab and create a new repository. Initialize it with a README file if required. Step 2: Add Terraform Configuration Files Next, create the Terraform configuration files that define your infrastructure. Create a folder named terraform in your repository. Create a file named main.tf inside the terraform directory. Example main.tf: provider &quot;azurerm&quot; { features {} } resource &quot;azurerm_resource_group&quot; &quot;example&quot; { name = &quot;example-resource-group&quot; location = &quot;East US&quot; } Step 3: Create a Service Connection in Azure DevOps To allow Azure DevOps to deploy resources in your Azure account: Go to your project settings in Azure DevOps. Navigate to “Service connections”. Click on “New service connection” and choose “Azure Resource Manager”. Follow the prompts to authenticate and create the service connection with your Azure subscription. Step 4: Create the CI/CD Pipeline Using Multi-Stage YAML In your repository, create a new file named azure-pipelines.yml. This file will define your CI/CD pipeline. trigger: - main stages: - stage: Build displayName: &#39;Build Stage&#39; jobs: - job: TerraformInit displayName: &#39;Terraform Init&#39; pool: vmImage: &#39;ubuntu-latest&#39; steps: - script: | terraform init displayName: &#39;Initialize Terraform&#39; - job: TerraformPlan displayName: &#39;Terraform Plan&#39; dependsOn: TerraformInit pool: vmImage: &#39;ubuntu-latest&#39; steps: - script: | terraform plan -out=tfplan displayName: &#39;Plan Terraform Changes&#39; - stage: Deploy displayName: &#39;Deploy Stage&#39; dependsOn: Build jobs: - job: TerraformApply displayName: &#39;Terraform Apply&#39; pool: vmImage: &#39;ubuntu-latest&#39; steps: - script: | terraform apply -auto-approve tfplan displayName: &#39;Apply Terraform Changes&#39; Step 5: Commit and Push Your Changes Add your changes to Git. Commit your files with a meaningful message, e.g., “Add Terraform files and pipeline configuration”. Push your changes to the Azure DevOps repository. Step 6: Run Your Pipeline Navigate to the “Pipelines” tab in Azure DevOps. You should see your pipeline triggered automatically by your latest commit. Monitor the pipeline’s progress, and check for any errors. If successful, you will have deployed the infrastructure defined in your main.tf file! Code Example Here’s an overview of the Terraform code used in this tutorial: provider &quot;azurerm&quot; { features {} } resource &quot;azurerm_resource_group&quot; &quot;example&quot; { name = &quot;example-resource-group&quot; location = &quot;East US&quot; } This simple Terraform configuration creates a Resource Group in Azure. You can extend this to include more resources as needed for your infrastructure. Conclusion In this blog post, we walked through the process of setting up a CI/CD pipeline in Azure DevOps using multi-stage YAML for Terraform infrastructure deployment. This configuration allows you to automate the steps involved in deploying your infrastructure, ensuring consistency and reliability. With continuous integration and delivery practices, you can focus on building higher-quality applications while Azure DevOps manages your infrastructure deployment. Happy coding!" />
+<link rel="canonical" href="http://localhost:4000/phipcode/2025/05/27/implement-a-cicd-pipeline-in-azure-devops-using-multi-stage-yaml-for-terraform-infrastructure-deployment.html" />
+<meta property="og:url" content="http://localhost:4000/phipcode/2025/05/27/implement-a-cicd-pipeline-in-azure-devops-using-multi-stage-yaml-for-terraform-infrastructure-deployment.html" />
+<meta property="og:site_name" content="Phi’s AI-Powered Tech Chronicles" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-05-27T00:00:00+10:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Implement a CI/CD Pipeline in Azure DevOps Using Multi-Stage YAML for Terraform Infrastructure Deployment" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2025-05-27T00:00:00+10:00","datePublished":"2025-05-27T00:00:00+10:00","description":"Introduction Continuous Integration and Continuous Delivery (CI/CD) are essential practices in modern software development, enabling teams to automate the deployment of applications and infrastructure. In this post, we’ll set up a CI/CD pipeline in Azure DevOps using multi-stage YAML to deploy Terraform-managed infrastructure. By the end of this guide, you’ll understand how to automate your infrastructure provisioning and management efficiently. Prerequisites Before we begin, ensure you have the following tools and resources in place: An Azure account with appropriate permissions to create resources An Azure DevOps organization and project A basic understanding of Terraform and its configuration files Azure DevOps CLI and Terraform installed locally for local testing Step-by-Step Guide Step 1: Set Up Your Azure DevOps Project Create a New Azure DevOps Project: Navigate to your Azure DevOps organization. Click on “New Project” and provide a name (e.g., terraform-ci-cd). Choose visibility settings for your project (Public or Private). Create a Repository: Inside your newly created project, go to the “Repos” tab and create a new repository. Initialize it with a README file if required. Step 2: Add Terraform Configuration Files Next, create the Terraform configuration files that define your infrastructure. Create a folder named terraform in your repository. Create a file named main.tf inside the terraform directory. Example main.tf: provider &quot;azurerm&quot; { features {} } resource &quot;azurerm_resource_group&quot; &quot;example&quot; { name = &quot;example-resource-group&quot; location = &quot;East US&quot; } Step 3: Create a Service Connection in Azure DevOps To allow Azure DevOps to deploy resources in your Azure account: Go to your project settings in Azure DevOps. Navigate to “Service connections”. Click on “New service connection” and choose “Azure Resource Manager”. Follow the prompts to authenticate and create the service connection with your Azure subscription. Step 4: Create the CI/CD Pipeline Using Multi-Stage YAML In your repository, create a new file named azure-pipelines.yml. This file will define your CI/CD pipeline. trigger: - main stages: - stage: Build displayName: &#39;Build Stage&#39; jobs: - job: TerraformInit displayName: &#39;Terraform Init&#39; pool: vmImage: &#39;ubuntu-latest&#39; steps: - script: | terraform init displayName: &#39;Initialize Terraform&#39; - job: TerraformPlan displayName: &#39;Terraform Plan&#39; dependsOn: TerraformInit pool: vmImage: &#39;ubuntu-latest&#39; steps: - script: | terraform plan -out=tfplan displayName: &#39;Plan Terraform Changes&#39; - stage: Deploy displayName: &#39;Deploy Stage&#39; dependsOn: Build jobs: - job: TerraformApply displayName: &#39;Terraform Apply&#39; pool: vmImage: &#39;ubuntu-latest&#39; steps: - script: | terraform apply -auto-approve tfplan displayName: &#39;Apply Terraform Changes&#39; Step 5: Commit and Push Your Changes Add your changes to Git. Commit your files with a meaningful message, e.g., “Add Terraform files and pipeline configuration”. Push your changes to the Azure DevOps repository. Step 6: Run Your Pipeline Navigate to the “Pipelines” tab in Azure DevOps. You should see your pipeline triggered automatically by your latest commit. Monitor the pipeline’s progress, and check for any errors. If successful, you will have deployed the infrastructure defined in your main.tf file! Code Example Here’s an overview of the Terraform code used in this tutorial: provider &quot;azurerm&quot; { features {} } resource &quot;azurerm_resource_group&quot; &quot;example&quot; { name = &quot;example-resource-group&quot; location = &quot;East US&quot; } This simple Terraform configuration creates a Resource Group in Azure. You can extend this to include more resources as needed for your infrastructure. Conclusion In this blog post, we walked through the process of setting up a CI/CD pipeline in Azure DevOps using multi-stage YAML for Terraform infrastructure deployment. This configuration allows you to automate the steps involved in deploying your infrastructure, ensuring consistency and reliability. With continuous integration and delivery practices, you can focus on building higher-quality applications while Azure DevOps manages your infrastructure deployment. Happy coding!","headline":"Implement a CI/CD Pipeline in Azure DevOps Using Multi-Stage YAML for Terraform Infrastructure Deployment","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/phipcode/2025/05/27/implement-a-cicd-pipeline-in-azure-devops-using-multi-stage-yaml-for-terraform-infrastructure-deployment.html"},"url":"http://localhost:4000/phipcode/2025/05/27/implement-a-cicd-pipeline-in-azure-devops-using-multi-stage-yaml-for-terraform-infrastructure-deployment.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link rel="stylesheet" href="/phipcode/assets/css/custom.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="/phipcode/assets/favicon.ico">
+
+  <script>
+    (function () {
+      const theme = localStorage.getItem('theme');
+      if (theme) document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+  <header class="site-header container">
+    <h1 class="site-title"><a href="/phipcode/">Phi's AI-Powered Tech Chronicles</a></h1>
+    <p class="site-description">Exploring Azure, DevOps, and Beyond — Powered by AI, Inspired by Curiosity</p>
+    <nav class="site-nav">
+      <a href="/phipcode/">Home</a>
+      <a href="/phipcode/about/">About</a>
+      <a href="/phipcode/tags/">Tags</a>
+      <a href="/phipcode/contact/">Contact</a>
+      <button id="theme-toggle">🌓</button>
+    </nav>
+  </header>
+
+  <main class="site-main container">
+    <article class="post">
+  <header>
+    <h1>Implement a CI/CD Pipeline in Azure DevOps Using Multi-Stage YAML for Terraform Infrastructure Deployment</h1>
+    <p class="post-meta">
+      May 27, 2025 &bull;
+       &bull;
+      
+      
+      4 min read
+    </p>
+    
+      <p class="tags">
+        
+          <a href="/tags/#azure" class="tag">azure</a>
+        
+          <a href="/tags/#terraform" class="tag">terraform</a>
+        
+          <a href="/tags/#iac" class="tag">iac</a>
+        
+      </p>
+    
+  </header>
+
+  <section class="post-content">
+    <h2 id="introduction">Introduction</h2>
+
+<p>Continuous Integration and Continuous Delivery (CI/CD) are essential practices in modern software development, enabling teams to automate the deployment of applications and infrastructure. In this post, we’ll set up a CI/CD pipeline in Azure DevOps using multi-stage YAML to deploy Terraform-managed infrastructure. By the end of this guide, you’ll understand how to automate your infrastructure provisioning and management efficiently.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before we begin, ensure you have the following tools and resources in place:</p>
+
+<ul>
+  <li>An Azure account with appropriate permissions to create resources</li>
+  <li>An Azure DevOps organization and project</li>
+  <li>A basic understanding of Terraform and its configuration files</li>
+  <li>Azure DevOps CLI and Terraform installed locally for local testing</li>
+</ul>
+
+<h2 id="step-by-step-guide">Step-by-Step Guide</h2>
+
+<h3 id="step-1-set-up-your-azure-devops-project">Step 1: Set Up Your Azure DevOps Project</h3>
+
+<ol>
+  <li><strong>Create a New Azure DevOps Project</strong>:
+    <ul>
+      <li>Navigate to your Azure DevOps organization.</li>
+      <li>Click on “New Project” and provide a name (e.g., <code class="language-plaintext highlighter-rouge">terraform-ci-cd</code>).</li>
+      <li>Choose visibility settings for your project (Public or Private).</li>
+    </ul>
+  </li>
+  <li><strong>Create a Repository</strong>:
+    <ul>
+      <li>Inside your newly created project, go to the “Repos” tab and create a new repository.</li>
+      <li>Initialize it with a README file if required.</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="step-2-add-terraform-configuration-files">Step 2: Add Terraform Configuration Files</h3>
+
+<p>Next, create the Terraform configuration files that define your infrastructure.</p>
+
+<ol>
+  <li>Create a folder named <code class="language-plaintext highlighter-rouge">terraform</code> in your repository.</li>
+  <li>Create a file named <code class="language-plaintext highlighter-rouge">main.tf</code> inside the <code class="language-plaintext highlighter-rouge">terraform</code> directory.</li>
+</ol>
+
+<p>Example <code class="language-plaintext highlighter-rouge">main.tf</code>:</p>
+
+<div class="language-terraform highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">provider</span> <span class="s2">"azurerm"</span> <span class="p">{</span>
+  <span class="nx">features</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="k">resource</span> <span class="s2">"azurerm_resource_group"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>     <span class="o">=</span> <span class="s2">"example-resource-group"</span>
+  <span class="nx">location</span> <span class="o">=</span> <span class="s2">"East US"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="step-3-create-a-service-connection-in-azure-devops">Step 3: Create a Service Connection in Azure DevOps</h3>
+
+<p>To allow Azure DevOps to deploy resources in your Azure account:</p>
+
+<ol>
+  <li>Go to your project settings in Azure DevOps.</li>
+  <li>Navigate to “Service connections”.</li>
+  <li>Click on “New service connection” and choose “Azure Resource Manager”.</li>
+  <li>Follow the prompts to authenticate and create the service connection with your Azure subscription.</li>
+</ol>
+
+<h3 id="step-4-create-the-cicd-pipeline-using-multi-stage-yaml">Step 4: Create the CI/CD Pipeline Using Multi-Stage YAML</h3>
+
+<p>In your repository, create a new file named <code class="language-plaintext highlighter-rouge">azure-pipelines.yml</code>. This file will define your CI/CD pipeline.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">trigger</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="s">main</span>
+
+<span class="na">stages</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">stage</span><span class="pi">:</span> <span class="s">Build</span>
+  <span class="na">displayName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Build</span><span class="nv"> </span><span class="s">Stage'</span>
+  <span class="na">jobs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">job</span><span class="pi">:</span> <span class="s">TerraformInit</span>
+    <span class="na">displayName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Terraform</span><span class="nv"> </span><span class="s">Init'</span>
+    <span class="na">pool</span><span class="pi">:</span>
+      <span class="na">vmImage</span><span class="pi">:</span> <span class="s1">'</span><span class="s">ubuntu-latest'</span>
+    <span class="na">steps</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">script</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">terraform init</span>
+      <span class="na">displayName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Initialize</span><span class="nv"> </span><span class="s">Terraform'</span>
+
+  <span class="pi">-</span> <span class="na">job</span><span class="pi">:</span> <span class="s">TerraformPlan</span>
+    <span class="na">displayName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Terraform</span><span class="nv"> </span><span class="s">Plan'</span>
+    <span class="na">dependsOn</span><span class="pi">:</span> <span class="s">TerraformInit</span>
+    <span class="na">pool</span><span class="pi">:</span>
+      <span class="na">vmImage</span><span class="pi">:</span> <span class="s1">'</span><span class="s">ubuntu-latest'</span>
+    <span class="na">steps</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">script</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">terraform plan -out=tfplan</span>
+      <span class="na">displayName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Plan</span><span class="nv"> </span><span class="s">Terraform</span><span class="nv"> </span><span class="s">Changes'</span>
+
+<span class="pi">-</span> <span class="na">stage</span><span class="pi">:</span> <span class="s">Deploy</span>
+  <span class="na">displayName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Deploy</span><span class="nv"> </span><span class="s">Stage'</span>
+  <span class="na">dependsOn</span><span class="pi">:</span> <span class="s">Build</span>
+  <span class="na">jobs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">job</span><span class="pi">:</span> <span class="s">TerraformApply</span>
+    <span class="na">displayName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Terraform</span><span class="nv"> </span><span class="s">Apply'</span>
+    <span class="na">pool</span><span class="pi">:</span>
+      <span class="na">vmImage</span><span class="pi">:</span> <span class="s1">'</span><span class="s">ubuntu-latest'</span>
+    <span class="na">steps</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">script</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">terraform apply -auto-approve tfplan</span>
+      <span class="na">displayName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Apply</span><span class="nv"> </span><span class="s">Terraform</span><span class="nv"> </span><span class="s">Changes'</span>
+</code></pre></div></div>
+
+<h3 id="step-5-commit-and-push-your-changes">Step 5: Commit and Push Your Changes</h3>
+
+<ol>
+  <li>Add your changes to Git.</li>
+  <li>Commit your files with a meaningful message, e.g., “Add Terraform files and pipeline configuration”.</li>
+  <li>Push your changes to the Azure DevOps repository.</li>
+</ol>
+
+<h3 id="step-6-run-your-pipeline">Step 6: Run Your Pipeline</h3>
+
+<ol>
+  <li>Navigate to the “Pipelines” tab in Azure DevOps.</li>
+  <li>You should see your pipeline triggered automatically by your latest commit.</li>
+  <li>Monitor the pipeline’s progress, and check for any errors. If successful, you will have deployed the infrastructure defined in your <code class="language-plaintext highlighter-rouge">main.tf</code> file!</li>
+</ol>
+
+<h2 id="code-example">Code Example</h2>
+
+<p>Here’s an overview of the Terraform code used in this tutorial:</p>
+
+<div class="language-terraform highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">provider</span> <span class="s2">"azurerm"</span> <span class="p">{</span>
+  <span class="nx">features</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="k">resource</span> <span class="s2">"azurerm_resource_group"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>     <span class="o">=</span> <span class="s2">"example-resource-group"</span>
+  <span class="nx">location</span> <span class="o">=</span> <span class="s2">"East US"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This simple Terraform configuration creates a Resource Group in Azure. You can extend this to include more resources as needed for your infrastructure.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this blog post, we walked through the process of setting up a CI/CD pipeline in Azure DevOps using multi-stage YAML for Terraform infrastructure deployment. This configuration allows you to automate the steps involved in deploying your infrastructure, ensuring consistency and reliability. With continuous integration and delivery practices, you can focus on building higher-quality applications while Azure DevOps manages your infrastructure deployment. Happy coding!</p>
+
+  </section>
+
+  <div class="social-share">
+    <p>Share this post:</p>
+    <a href="https://twitter.com/intent/tweet?url=http://localhost:4000/2025/05/27/implement-a-cicd-pipeline-in-azure-devops-using-multi-stage-yaml-for-terraform-infrastructure-deployment.html&text=Implement a CI/CD Pipeline in Azure DevOps Using Multi-Stage YAML for Terraform Infrastructure Deployment" target="_blank">Twitter</a>
+    <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/2025/05/27/implement-a-cicd-pipeline-in-azure-devops-using-multi-stage-yaml-for-terraform-infrastructure-deployment.html" target="_blank">LinkedIn</a>
+  </div>
+</article>
+
+  </main>
+
+  <footer class="site-footer container">
+    <p>&copy; 2025 Phi's AI-Powered Tech Chronicles. Built with ❤️ using Jekyll and AI.</p>
+  </footer>
+
+  <script>
+    const toggleButton = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+
+    toggleButton.addEventListener('click', () => {
+      const current = root.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+  </script>
+</body>
+</html>

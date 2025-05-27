@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deploy Azure Virtual Machine using AVM Module | Phi's AI-Powered Tech Chronicles</title>
+  <meta name="description" content="Exploring Azure, DevOps, and Beyond — Powered by AI, Inspired by Curiosity" />
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Deploy Azure Virtual Machine using AVM Module | Phi’s AI-Powered Tech Chronicles</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Deploy Azure Virtual Machine using AVM Module" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Introduction In this blog post, we will explore how to deploy an Azure Virtual Machine (VM) using the Azure Virtual Machine (AVM) module with Bicep. The AVM module simplifies the deployment process by encapsulating complex configurations, enabling you to deploy VMs quickly and efficiently. Prerequisites Before you begin, ensure you have the following: An active Azure subscription. The Azure CLI installed and configured. The latest version of Bicep installed on your machine. Familiarity with Azure Resource Manager (ARM) templates and basic knowledge of Bicep syntax. Step-by-Step Guide Step 1: Set Up Your Environment First, open your preferred code editor and create a new Bicep file (e.g., main.bicep). Then, you will define some parameters for your VM. Step 2: Define Parameters Add the following parameters to the top of your main.bicep file. You’ll use these to customize the deployment of your VM: param vmName string = &#39;myVM&#39; param adminUsername string @secure() param adminPassword string param location string = resourceGroup().location Step 3: Import the AVM Module To deploy the VM, we’ll import the Azure Virtual Machine module. You can find the module in the Azure Bicep GitHub repository or Azure Quickstart templates. module avm &#39;br/msft/avm@1.0.0&#39; = { name: &#39;myVMDeployment&#39; params: { vmName: vmName adminUsername: adminUsername adminPassword: adminPassword location: location } } Step 4: Configure VM Details Next, you’ll want to configure your VM details such as size, OS type, and image. Here is an example of additional parameters you can specify: @allowed([&#39;Standard_DS1_v2&#39;, &#39;Standard_DS2_v2&#39;]) param vmSize string = &#39;Standard_DS1_v2&#39; param osType string = &#39;Linux&#39; param imagePublisher string = &#39;Canonical&#39; param imageOffer string = &#39;UbuntuServer&#39; param imageSku string = &#39;18.04-LTS&#39; Modify the module parameters for these VM details: module avm &#39;br/msft/avm@1.0.0&#39; = { name: &#39;myVMDeployment&#39; params: { vmName: vmName adminUsername: adminUsername adminPassword: adminPassword location: location vmSize: vmSize osType: osType imagePublisher: imagePublisher imageOffer: imageOffer imageSku: imageSku } } Step 5: Deploy Your Bicep File To deploy the Bicep file you created, use the Azure CLI: az deployment group create --resource-group yourResourceGroup --template-file main.bicep --parameters adminUsername=&#39;your_username&#39; adminPassword=&#39;your_password&#39; Replace yourResourceGroup, your_username, and your_password with your specific details. Code Example Here’s the complete code for the Bicep file we discussed: param vmName string = &#39;myVM&#39; param adminUsername string @secure() param adminPassword string param location string = resourceGroup().location @allowed([&#39;Standard_DS1_v2&#39;, &#39;Standard_DS2_v2&#39;]) param vmSize string = &#39;Standard_DS1_v2&#39; param osType string = &#39;Linux&#39; param imagePublisher string = &#39;Canonical&#39; param imageOffer string = &#39;UbuntuServer&#39; param imageSku string = &#39;18.04-LTS&#39; module avm &#39;br/msft/avm@1.0.0&#39; = { name: &#39;myVMDeployment&#39; params: { vmName: vmName adminUsername: adminUsername adminPassword: adminPassword location: location vmSize: vmSize osType: osType imagePublisher: imagePublisher imageOffer: imageOffer imageSku: imageSku } } Troubleshooting If you encounter issues during deployment, check the following: Ensure that the Azure CLI is updated to the latest version. Verify that you have the necessary permissions to create resources in the Azure subscription. Check the Azure Resource Manager (ARM) deployment output for detailed error messages. Summary In this guide, we’ve gone through the steps to deploy an Azure Virtual Machine using the AVM Bicep module. By leveraging the AVM module, you can simplify your infrastructure deployments and maintain your configuration as code. ```" />
+<meta property="og:description" content="Introduction In this blog post, we will explore how to deploy an Azure Virtual Machine (VM) using the Azure Virtual Machine (AVM) module with Bicep. The AVM module simplifies the deployment process by encapsulating complex configurations, enabling you to deploy VMs quickly and efficiently. Prerequisites Before you begin, ensure you have the following: An active Azure subscription. The Azure CLI installed and configured. The latest version of Bicep installed on your machine. Familiarity with Azure Resource Manager (ARM) templates and basic knowledge of Bicep syntax. Step-by-Step Guide Step 1: Set Up Your Environment First, open your preferred code editor and create a new Bicep file (e.g., main.bicep). Then, you will define some parameters for your VM. Step 2: Define Parameters Add the following parameters to the top of your main.bicep file. You’ll use these to customize the deployment of your VM: param vmName string = &#39;myVM&#39; param adminUsername string @secure() param adminPassword string param location string = resourceGroup().location Step 3: Import the AVM Module To deploy the VM, we’ll import the Azure Virtual Machine module. You can find the module in the Azure Bicep GitHub repository or Azure Quickstart templates. module avm &#39;br/msft/avm@1.0.0&#39; = { name: &#39;myVMDeployment&#39; params: { vmName: vmName adminUsername: adminUsername adminPassword: adminPassword location: location } } Step 4: Configure VM Details Next, you’ll want to configure your VM details such as size, OS type, and image. Here is an example of additional parameters you can specify: @allowed([&#39;Standard_DS1_v2&#39;, &#39;Standard_DS2_v2&#39;]) param vmSize string = &#39;Standard_DS1_v2&#39; param osType string = &#39;Linux&#39; param imagePublisher string = &#39;Canonical&#39; param imageOffer string = &#39;UbuntuServer&#39; param imageSku string = &#39;18.04-LTS&#39; Modify the module parameters for these VM details: module avm &#39;br/msft/avm@1.0.0&#39; = { name: &#39;myVMDeployment&#39; params: { vmName: vmName adminUsername: adminUsername adminPassword: adminPassword location: location vmSize: vmSize osType: osType imagePublisher: imagePublisher imageOffer: imageOffer imageSku: imageSku } } Step 5: Deploy Your Bicep File To deploy the Bicep file you created, use the Azure CLI: az deployment group create --resource-group yourResourceGroup --template-file main.bicep --parameters adminUsername=&#39;your_username&#39; adminPassword=&#39;your_password&#39; Replace yourResourceGroup, your_username, and your_password with your specific details. Code Example Here’s the complete code for the Bicep file we discussed: param vmName string = &#39;myVM&#39; param adminUsername string @secure() param adminPassword string param location string = resourceGroup().location @allowed([&#39;Standard_DS1_v2&#39;, &#39;Standard_DS2_v2&#39;]) param vmSize string = &#39;Standard_DS1_v2&#39; param osType string = &#39;Linux&#39; param imagePublisher string = &#39;Canonical&#39; param imageOffer string = &#39;UbuntuServer&#39; param imageSku string = &#39;18.04-LTS&#39; module avm &#39;br/msft/avm@1.0.0&#39; = { name: &#39;myVMDeployment&#39; params: { vmName: vmName adminUsername: adminUsername adminPassword: adminPassword location: location vmSize: vmSize osType: osType imagePublisher: imagePublisher imageOffer: imageOffer imageSku: imageSku } } Troubleshooting If you encounter issues during deployment, check the following: Ensure that the Azure CLI is updated to the latest version. Verify that you have the necessary permissions to create resources in the Azure subscription. Check the Azure Resource Manager (ARM) deployment output for detailed error messages. Summary In this guide, we’ve gone through the steps to deploy an Azure Virtual Machine using the AVM Bicep module. By leveraging the AVM module, you can simplify your infrastructure deployments and maintain your configuration as code. ```" />
+<link rel="canonical" href="http://localhost:4000/phipcode/2025/05/27/deploy-azure-virtual-machine-using-avm-module.html" />
+<meta property="og:url" content="http://localhost:4000/phipcode/2025/05/27/deploy-azure-virtual-machine-using-avm-module.html" />
+<meta property="og:site_name" content="Phi’s AI-Powered Tech Chronicles" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-05-27T00:00:00+10:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Deploy Azure Virtual Machine using AVM Module" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2025-05-27T00:00:00+10:00","datePublished":"2025-05-27T00:00:00+10:00","description":"Introduction In this blog post, we will explore how to deploy an Azure Virtual Machine (VM) using the Azure Virtual Machine (AVM) module with Bicep. The AVM module simplifies the deployment process by encapsulating complex configurations, enabling you to deploy VMs quickly and efficiently. Prerequisites Before you begin, ensure you have the following: An active Azure subscription. The Azure CLI installed and configured. The latest version of Bicep installed on your machine. Familiarity with Azure Resource Manager (ARM) templates and basic knowledge of Bicep syntax. Step-by-Step Guide Step 1: Set Up Your Environment First, open your preferred code editor and create a new Bicep file (e.g., main.bicep). Then, you will define some parameters for your VM. Step 2: Define Parameters Add the following parameters to the top of your main.bicep file. You’ll use these to customize the deployment of your VM: param vmName string = &#39;myVM&#39; param adminUsername string @secure() param adminPassword string param location string = resourceGroup().location Step 3: Import the AVM Module To deploy the VM, we’ll import the Azure Virtual Machine module. You can find the module in the Azure Bicep GitHub repository or Azure Quickstart templates. module avm &#39;br/msft/avm@1.0.0&#39; = { name: &#39;myVMDeployment&#39; params: { vmName: vmName adminUsername: adminUsername adminPassword: adminPassword location: location } } Step 4: Configure VM Details Next, you’ll want to configure your VM details such as size, OS type, and image. Here is an example of additional parameters you can specify: @allowed([&#39;Standard_DS1_v2&#39;, &#39;Standard_DS2_v2&#39;]) param vmSize string = &#39;Standard_DS1_v2&#39; param osType string = &#39;Linux&#39; param imagePublisher string = &#39;Canonical&#39; param imageOffer string = &#39;UbuntuServer&#39; param imageSku string = &#39;18.04-LTS&#39; Modify the module parameters for these VM details: module avm &#39;br/msft/avm@1.0.0&#39; = { name: &#39;myVMDeployment&#39; params: { vmName: vmName adminUsername: adminUsername adminPassword: adminPassword location: location vmSize: vmSize osType: osType imagePublisher: imagePublisher imageOffer: imageOffer imageSku: imageSku } } Step 5: Deploy Your Bicep File To deploy the Bicep file you created, use the Azure CLI: az deployment group create --resource-group yourResourceGroup --template-file main.bicep --parameters adminUsername=&#39;your_username&#39; adminPassword=&#39;your_password&#39; Replace yourResourceGroup, your_username, and your_password with your specific details. Code Example Here’s the complete code for the Bicep file we discussed: param vmName string = &#39;myVM&#39; param adminUsername string @secure() param adminPassword string param location string = resourceGroup().location @allowed([&#39;Standard_DS1_v2&#39;, &#39;Standard_DS2_v2&#39;]) param vmSize string = &#39;Standard_DS1_v2&#39; param osType string = &#39;Linux&#39; param imagePublisher string = &#39;Canonical&#39; param imageOffer string = &#39;UbuntuServer&#39; param imageSku string = &#39;18.04-LTS&#39; module avm &#39;br/msft/avm@1.0.0&#39; = { name: &#39;myVMDeployment&#39; params: { vmName: vmName adminUsername: adminUsername adminPassword: adminPassword location: location vmSize: vmSize osType: osType imagePublisher: imagePublisher imageOffer: imageOffer imageSku: imageSku } } Troubleshooting If you encounter issues during deployment, check the following: Ensure that the Azure CLI is updated to the latest version. Verify that you have the necessary permissions to create resources in the Azure subscription. Check the Azure Resource Manager (ARM) deployment output for detailed error messages. Summary In this guide, we’ve gone through the steps to deploy an Azure Virtual Machine using the AVM Bicep module. By leveraging the AVM module, you can simplify your infrastructure deployments and maintain your configuration as code. ```","headline":"Deploy Azure Virtual Machine using AVM Module","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/phipcode/2025/05/27/deploy-azure-virtual-machine-using-avm-module.html"},"url":"http://localhost:4000/phipcode/2025/05/27/deploy-azure-virtual-machine-using-avm-module.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link rel="stylesheet" href="/phipcode/assets/css/custom.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="/phipcode/assets/favicon.ico">
+
+  <script>
+    (function () {
+      const theme = localStorage.getItem('theme');
+      if (theme) document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+  <header class="site-header container">
+    <h1 class="site-title"><a href="/phipcode/">Phi's AI-Powered Tech Chronicles</a></h1>
+    <p class="site-description">Exploring Azure, DevOps, and Beyond — Powered by AI, Inspired by Curiosity</p>
+    <nav class="site-nav">
+      <a href="/phipcode/">Home</a>
+      <a href="/phipcode/about/">About</a>
+      <a href="/phipcode/tags/">Tags</a>
+      <a href="/phipcode/contact/">Contact</a>
+      <button id="theme-toggle">🌓</button>
+    </nav>
+  </header>
+
+  <main class="site-main container">
+    <article class="post">
+  <header>
+    <h1>Deploy Azure Virtual Machine using AVM Module</h1>
+    <p class="post-meta">
+      May 27, 2025 &bull;
+       &bull;
+      
+      
+      2 min read
+    </p>
+    
+      <p class="tags">
+        
+          <a href="/tags/#azure" class="tag">azure</a>
+        
+          <a href="/tags/#bicep" class="tag">bicep</a>
+        
+          <a href="/tags/#iac" class="tag">iac</a>
+        
+      </p>
+    
+  </header>
+
+  <section class="post-content">
+    <h2 id="introduction">Introduction</h2>
+
+<p>In this blog post, we will explore how to deploy an Azure Virtual Machine (VM) using the Azure Virtual Machine (AVM) module with Bicep. The AVM module simplifies the deployment process by encapsulating complex configurations, enabling you to deploy VMs quickly and efficiently.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before you begin, ensure you have the following:</p>
+
+<ul>
+  <li>An active Azure subscription.</li>
+  <li>The Azure CLI installed and configured.</li>
+  <li>The latest version of Bicep installed on your machine.</li>
+  <li>Familiarity with Azure Resource Manager (ARM) templates and basic knowledge of Bicep syntax.</li>
+</ul>
+
+<h2 id="step-by-step-guide">Step-by-Step Guide</h2>
+
+<h3 id="step-1-set-up-your-environment">Step 1: Set Up Your Environment</h3>
+
+<p>First, open your preferred code editor and create a new Bicep file (e.g., <code class="language-plaintext highlighter-rouge">main.bicep</code>). Then, you will define some parameters for your VM.</p>
+
+<h3 id="step-2-define-parameters">Step 2: Define Parameters</h3>
+
+<p>Add the following parameters to the top of your <code class="language-plaintext highlighter-rouge">main.bicep</code> file. You’ll use these to customize the deployment of your VM:</p>
+
+<pre><code class="language-bicep">param vmName string = 'myVM'
+param adminUsername string
+@secure()
+param adminPassword string
+param location string = resourceGroup().location
+</code></pre>
+
+<h3 id="step-3-import-the-avm-module">Step 3: Import the AVM Module</h3>
+
+<p>To deploy the VM, we’ll import the Azure Virtual Machine module. You can find the module in the Azure Bicep GitHub repository or Azure Quickstart templates.</p>
+
+<pre><code class="language-bicep">module avm 'br/msft/avm@1.0.0' = {
+  name: 'myVMDeployment'
+  params: {
+    vmName: vmName
+    adminUsername: adminUsername
+    adminPassword: adminPassword
+    location: location
+  }
+}
+</code></pre>
+
+<h3 id="step-4-configure-vm-details">Step 4: Configure VM Details</h3>
+
+<p>Next, you’ll want to configure your VM details such as size, OS type, and image. Here is an example of additional parameters you can specify:</p>
+
+<pre><code class="language-bicep">@allowed(['Standard_DS1_v2', 'Standard_DS2_v2'])
+param vmSize string = 'Standard_DS1_v2'
+
+param osType string = 'Linux'
+param imagePublisher string = 'Canonical'
+param imageOffer string = 'UbuntuServer'
+param imageSku string = '18.04-LTS'
+</code></pre>
+
+<p>Modify the module parameters for these VM details:</p>
+
+<pre><code class="language-bicep">module avm 'br/msft/avm@1.0.0' = {
+  name: 'myVMDeployment'
+  params: {
+    vmName: vmName
+    adminUsername: adminUsername
+    adminPassword: adminPassword
+    location: location
+    vmSize: vmSize
+    osType: osType
+    imagePublisher: imagePublisher
+    imageOffer: imageOffer
+    imageSku: imageSku
+  }
+}
+</code></pre>
+
+<h3 id="step-5-deploy-your-bicep-file">Step 5: Deploy Your Bicep File</h3>
+
+<p>To deploy the Bicep file you created, use the Azure CLI:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>az deployment group create <span class="nt">--resource-group</span> yourResourceGroup <span class="nt">--template-file</span> main.bicep <span class="nt">--parameters</span> <span class="nv">adminUsername</span><span class="o">=</span><span class="s1">'your_username'</span> <span class="nv">adminPassword</span><span class="o">=</span><span class="s1">'your_password'</span>
+</code></pre></div></div>
+
+<p>Replace <code class="language-plaintext highlighter-rouge">yourResourceGroup</code>, <code class="language-plaintext highlighter-rouge">your_username</code>, and <code class="language-plaintext highlighter-rouge">your_password</code> with your specific details.</p>
+
+<h2 id="code-example">Code Example</h2>
+
+<p>Here’s the complete code for the Bicep file we discussed:</p>
+
+<pre><code class="language-bicep">param vmName string = 'myVM'
+param adminUsername string
+@secure()
+param adminPassword string
+param location string = resourceGroup().location
+
+@allowed(['Standard_DS1_v2', 'Standard_DS2_v2'])
+param vmSize string = 'Standard_DS1_v2'
+
+param osType string = 'Linux'
+param imagePublisher string = 'Canonical'
+param imageOffer string = 'UbuntuServer'
+param imageSku string = '18.04-LTS'
+
+module avm 'br/msft/avm@1.0.0' = {
+  name: 'myVMDeployment'
+  params: {
+    vmName: vmName
+    adminUsername: adminUsername
+    adminPassword: adminPassword
+    location: location
+    vmSize: vmSize
+    osType: osType
+    imagePublisher: imagePublisher
+    imageOffer: imageOffer
+    imageSku: imageSku
+  }
+}
+</code></pre>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<p>If you encounter issues during deployment, check the following:</p>
+
+<ol>
+  <li>Ensure that the Azure CLI is updated to the latest version.</li>
+  <li>Verify that you have the necessary permissions to create resources in the Azure subscription.</li>
+  <li>Check the Azure Resource Manager (ARM) deployment output for detailed error messages.</li>
+</ol>
+
+<h2 id="summary">Summary</h2>
+
+<p>In this guide, we’ve gone through the steps to deploy an Azure Virtual Machine using the AVM Bicep module. By leveraging the AVM module, you can simplify your infrastructure deployments and maintain your configuration as code.
+```</p>
+
+  </section>
+
+  <div class="social-share">
+    <p>Share this post:</p>
+    <a href="https://twitter.com/intent/tweet?url=http://localhost:4000/2025/05/27/deploy-azure-virtual-machine-using-avm-module.html&text=Deploy Azure Virtual Machine using AVM Module" target="_blank">Twitter</a>
+    <a href="https://www.linkedin.com/sharing/share-offsite/?url=http://localhost:4000/2025/05/27/deploy-azure-virtual-machine-using-avm-module.html" target="_blank">LinkedIn</a>
+  </div>
+</article>
+
+  </main>
+
+  <footer class="site-footer container">
+    <p>&copy; 2025 Phi's AI-Powered Tech Chronicles. Built with ❤️ using Jekyll and AI.</p>
+  </footer>
+
+  <script>
+    const toggleButton = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+
+    toggleButton.addEventListener('click', () => {
+      const current = root.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+  </script>
+</body>
+</html>

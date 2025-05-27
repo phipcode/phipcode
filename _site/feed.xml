@@ -1,0 +1,1575 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/phipcode/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/phipcode/" rel="alternate" type="text/html" /><updated>2025-05-27T19:22:08+10:00</updated><id>http://localhost:4000/phipcode/feed.xml</id><title type="html">Phi’s AI-Powered Tech Chronicles</title><subtitle>Exploring Azure, DevOps, and Beyond — Powered by AI, Inspired by Curiosity</subtitle><entry><title type="html">Creating modules in bicep step by step</title><link href="http://localhost:4000/phipcode/2025/05/27/18-52-46-creating-modules-in-bicep-step-by-step.html" rel="alternate" type="text/html" title="Creating modules in bicep step by step" /><published>2025-05-27T18:52:12+10:00</published><updated>2025-05-27T18:52:12+10:00</updated><id>http://localhost:4000/phipcode/2025/05/27/18-52-46-creating-modules-in-bicep-step-by-step</id><content type="html" xml:base="http://localhost:4000/phipcode/2025/05/27/18-52-46-creating-modules-in-bicep-step-by-step.html"><![CDATA[<h1 id="creating-modules-in-bicep-step-by-step">Creating modules in bicep step by step</h1>
+
+<p><em>Published on 2025-05-27 by AI Writer</em></p>
+
+<hr />
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ol>
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#prerequisites">Prerequisites</a></li>
+  <li><a href="#architecture-overview">Architecture Overview</a></li>
+  <li><a href="#step-by-step-guide">Step-by-Step Guide</a></li>
+  <li><a href="#code-example">Code Example</a></li>
+  <li><a href="#cleanup">Cleanup</a></li>
+  <li><a href="#conclusion">Conclusion</a></li>
+  <li><a href="#further-reading">Further Reading</a></li>
+</ol>
+
+<hr />
+
+<h2 id="introduction">Introduction</h2>
+
+<p>In modern cloud infrastructure management, using declarative configuration languages such as Bicep allows for easier management and deployment of Azure resources. A modular approach enables better organization, reusability, and maintainability of your infrastructure as code (IaC). This guide will walk you through creating modules using Bicep step by step, empowering you to build scalable and maintainable infrastructure.</p>
+
+<hr />
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before you begin, ensure you have the following:</p>
+
+<ul>
+  <li>An active Azure subscription</li>
+  <li>Azure CLI installed and configured</li>
+  <li>Bicep CLI installed (or Azure CLI with Bicep support)</li>
+  <li>Basic understanding of Bicep syntax and Azure Resources</li>
+</ul>
+
+<hr />
+
+<h2 id="architecture-overview">Architecture Overview</h2>
+
+<p>When using Bicep for infrastructure deployment, the structure typically consists of several modules that define specific resources or functionalities. This modular architecture allows you to separate concerns and promote reuse throughout your projects.</p>
+
+<p>Imagine a system where you define:</p>
+
+<ul>
+  <li>A networking module for setting up virtual networks and subnets.</li>
+  <li>A compute module for creating virtual machines.</li>
+  <li>A storage module for provisioning storage accounts.</li>
+</ul>
+
+<p>By modularizing your infrastructure, any change or addition can be handled independently.</p>
+
+<hr />
+
+<h2 id="step-by-step-guide">Step-by-Step Guide</h2>
+
+<h3 id="step-1-create-your-main-bicep-file">Step 1: Create Your Main Bicep File</h3>
+
+<p>Start by creating a main <code class="language-plaintext highlighter-rouge">main.bicep</code> file that acts as the entry point to your Bicep files.</p>
+
+<pre><code class="language-bicep">// main.bicep
+targetScope = 'resourceGroup'
+
+// Importing modules
+module networkModule './network.bicep' = {
+  name: 'networkDeployment'
+  params: {
+    location: resourceGroup().location
+  }
+}
+
+module computeModule './compute.bicep' = {
+  name: 'computeDeployment'
+  params: {
+    location: resourceGroup().location
+    vnetId: networkModule.outputs.vnetId
+  }
+}
+</code></pre>
+
+<h3 id="step-2-create-your-modules">Step 2: Create Your Modules</h3>
+
+<p>Now, create individual Bicep files for each module.</p>
+
+<h4 id="network-module-networkbicep">Network Module (<code class="language-plaintext highlighter-rouge">network.bicep</code>)</h4>
+
+<pre><code class="language-bicep">// network.bicep
+param location string
+
+var vnetName = 'myVNet'
+
+resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+  name: vnetName
+  location: location
+  properties: {
+    addressSpace: {
+      addressPrefixes: ['10.0.0.0/16']
+    }
+    subnets: [
+      {
+        name: 'default'
+        properties: {
+          addressPrefix: '10.0.0.0/24'
+        }
+      }
+    ]
+  }
+}
+
+output vnetId string = vnet.id
+</code></pre>
+
+<h4 id="compute-module-computebicep">Compute Module (<code class="language-plaintext highlighter-rouge">compute.bicep</code>)</h4>
+
+<pre><code class="language-bicep">// compute.bicep
+param location string
+param vnetId string
+
+resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
+  name: 'myVM'
+  location: location
+  properties: {
+    hardwareProfile: {
+      vmSize: 'Standard_DS1_v2'
+    }
+    storageProfile: {
+      imageReference: {
+        publisher: 'Canonical'
+        offer: 'UbuntuServer'
+        sku: '18.04-LTS'
+        version: 'latest'
+      }
+      osDisk: {
+        caching: 'ReadWrite'
+        createOption: 'FromImage'
+      }
+    }
+    osProfile: {
+      computerName: 'myVM'
+      adminUsername: 'azureuser'
+      adminPassword: 'ComplexPassword123!'
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          id: vnetId
+        }
+      ]
+    }
+  }
+}
+</code></pre>
+
+<h3 id="step-3-deploy-your-bicep-files">Step 3: Deploy Your Bicep Files</h3>
+
+<p>To deploy your Bicep files, run the command below in your terminal:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>az deployment group create <span class="nt">--resource-group</span> &lt;YourResourceGroupName&gt; <span class="nt">--template-file</span> main.bicep
+</code></pre></div></div>
+
+<h3 id="step-4-verify-the-deployment">Step 4: Verify the Deployment</h3>
+
+<p>After running the deployment, you can check the Azure portal or use:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>az vm show <span class="nt">--resource-group</span> &lt;YourResourceGroupName&gt; <span class="nt">--name</span> myVM
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="code-example">Code Example</h2>
+
+<p>The complete code structure would look like this in your project:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/my-bicep-project
+│
+├── main.bicep
+├── network.bicep
+└── compute.bicep
+</code></pre></div></div>
+
+<p>Each file serves its purpose, ensuring that you adhere to a clear and maintainable structure.</p>
+
+<hr />
+
+<h2 id="cleanup">Cleanup</h2>
+
+<p>Once you are done testing and experimenting, remember to clean up your Azure resources to avoid unnecessary charges. You can do this with the following command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>az group delete <span class="nt">--name</span> &lt;YourResourceGroupName&gt; <span class="nt">--yes</span> <span class="nt">--no-wait</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Creating modules in Bicep is a powerful way to manage Azure resources by dividing your infrastructure into manageable components. Following this guide, you should now be able to create, deploy, and maintain your Bicep modules efficiently.</p>
+
+<hr />
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ul>
+  <li><a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/">Bicep Documentation</a></li>
+  <li><a href="https://github.com/Azure/bicep/blob/main/docs/tutorials/quickstart.md">Learning Bicep</a></li>
+  <li><a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/understanding-arm">Understanding Azure Resource Manager</a></li>
+</ul>
+
+<hr />]]></content><author><name>AI Writer</name></author><category term="azure" /><category term="terraform" /><category term="iac" /><category term="tutorial" /><summary type="html"><![CDATA[A step-by-step guide about Creating modules in bicep step by step using terraform.]]></summary></entry><entry><title type="html">Docker Lazy Loading Guide Using Python</title><link href="http://localhost:4000/phipcode/2025/05/27/18-46-23-docker-lazy-loading-guide-using-python.html" rel="alternate" type="text/html" title="Docker Lazy Loading Guide Using Python" /><published>2025-05-27T18:46:01+10:00</published><updated>2025-05-27T18:46:01+10:00</updated><id>http://localhost:4000/phipcode/2025/05/27/18-46-23-docker-lazy-loading-guide-using-python</id><content type="html" xml:base="http://localhost:4000/phipcode/2025/05/27/18-46-23-docker-lazy-loading-guide-using-python.html"><![CDATA[<h1 id="docker-lazy-loading-guide-using-python">Docker Lazy Loading Guide Using Python</h1>
+
+<p><em>Published on 2025-05-27 by AI Writer</em></p>
+
+<hr />
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ul>
+  <li><a href="#docker-lazy-loading-guide-using-python">Docker Lazy Loading Guide Using Python</a>
+    <ul>
+      <li><a href="#table-of-contents">Table of Contents</a></li>
+      <li><a href="#introduction">Introduction</a></li>
+      <li><a href="#prerequisites">Prerequisites</a></li>
+      <li><a href="#architecture-overview">Architecture Overview</a></li>
+      <li><a href="#step-by-step-guide">Step-by-Step Guide</a>
+        <ul>
+          <li><a href="#step-1-create-a-dockerfile">Step 1: Create a Dockerfile</a></li>
+          <li><a href="#step-2-create-a-python-application">Step 2: Create a Python Application</a></li>
+          <li><a href="#step-3-create-requirementstxt">Step 3: Create requirements.txt</a></li>
+          <li><a href="#step-4-build-the-docker-image">Step 4: Build the Docker Image</a></li>
+          <li><a href="#step-5-run-the-docker-container">Step 5: Run the Docker Container</a></li>
+        </ul>
+      </li>
+      <li><a href="#code-example">Code Example</a></li>
+      <li><a href="#cleanup">Cleanup</a></li>
+      <li><a href="#conclusion">Conclusion</a></li>
+      <li><a href="#further-reading">Further Reading</a></li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="introduction">Introduction</h2>
+
+<p>In modern application development, especially when using microservices architecture, managing application dependencies and resource loading is crucial for performance and efficiency. Lazy loading is a design pattern that postpones the loading of resources until they are required. This guide will illustrate how to implement lazy loading in a Dockerized Python application, helping you optimize your apps and reduce startup times.</p>
+
+<hr />
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before getting started, ensure you have the following:</p>
+
+<ul>
+  <li><strong>Docker</strong>: Installed on your local machine. <a href="https://docs.docker.com/get-docker/">Docker Installation Guide</a></li>
+  <li><strong>Python</strong>: Basic understanding of Python and how to create Python applications.</li>
+  <li><strong>Docker Hub Account</strong>: If you plan to push images to Docker Hub.</li>
+  <li><strong>Docker Compose</strong>: Optional, but can simplify services orchestration.</li>
+</ul>
+
+<hr />
+
+<h2 id="architecture-overview">Architecture Overview</h2>
+
+<p>The architecture of our lazy loading Python application consists of the following components:</p>
+
+<ul>
+  <li><strong>Docker Image</strong>: A Docker image containing Python and the required libraries.</li>
+  <li><strong>Python Application</strong>: A simple application that uses lazy loading to manage different components/modules.</li>
+  <li><strong>Docker Compose</strong>: (Optional) For managing multiple services.</li>
+</ul>
+
+<p>Here’s a simple representation of the architecture:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+------------------+
+| Docker Container  |
+|                  |
+| +--------------+ |
+| | Python App   | | &lt;-- Lazy loading modules as needed
+| +--------------+ |
++------------------+
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="step-by-step-guide">Step-by-Step Guide</h2>
+
+<h3 id="step-1-create-a-dockerfile">Step 1: Create a Dockerfile</h3>
+
+<p>First, create a <code class="language-plaintext highlighter-rouge">Dockerfile</code> in your project directory to define your application environment.</p>
+
+<div class="language-Dockerfile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Use the official Python image from the Docker Hub</span>
+<span class="k">FROM</span><span class="s"> python:3.9-slim</span>
+
+<span class="c"># Set the working directory</span>
+<span class="k">WORKDIR</span><span class="s"> /app</span>
+
+<span class="c"># Copy the requirements.txt to the container</span>
+<span class="k">COPY</span><span class="s"> requirements.txt .</span>
+
+<span class="c"># Install required Python packages</span>
+<span class="k">RUN </span>pip <span class="nb">install</span> <span class="nt">--no-cache-dir</span> <span class="nt">-r</span> requirements.txt
+
+<span class="c"># Copy the rest of the application code</span>
+<span class="k">COPY</span><span class="s"> . .</span>
+
+<span class="c"># Define the command to run the application</span>
+<span class="k">CMD</span><span class="s"> ["python", "app.py"]</span>
+</code></pre></div></div>
+
+<h3 id="step-2-create-a-python-application">Step 2: Create a Python Application</h3>
+
+<p>Create a simple Python application that demonstrates lazy loading. Here’s a basic example in <code class="language-plaintext highlighter-rouge">app.py</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">time</span>
+
+<span class="k">def</span> <span class="nf">lazy_load_resource</span><span class="p">(</span><span class="n">resource_name</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Loading resource: </span><span class="si">{</span><span class="n">resource_name</span><span class="si">}</span><span class="s">...</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">time</span><span class="p">.</span><span class="nf">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Simulating a delay in loading the resource
+</span>    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Resource </span><span class="si">{</span><span class="n">resource_name</span><span class="si">}</span><span class="s"> loaded.</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">resources</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">Database</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">Cache</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">ExternalAPI</span><span class="sh">'</span><span class="p">]</span>
+
+    <span class="c1"># Only loading resources when they are required
+</span>    <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">:</span>
+        <span class="n">user_input</span> <span class="o">=</span> <span class="nf">input</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Do you want to load </span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s">? (y/n): </span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user_input</span><span class="p">.</span><span class="nf">lower</span><span class="p">()</span> <span class="o">==</span> <span class="sh">'</span><span class="s">y</span><span class="sh">'</span><span class="p">:</span>
+            <span class="nf">lazy_load_resource</span><span class="p">(</span><span class="n">resource</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
+    <span class="nf">main</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h3 id="step-3-create-requirementstxt">Step 3: Create requirements.txt</h3>
+
+<p>Create a <code class="language-plaintext highlighter-rouge">requirements.txt</code> file to declare the necessary dependencies.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Example dependencies
+requests
+</code></pre></div></div>
+
+<h3 id="step-4-build-the-docker-image">Step 4: Build the Docker Image</h3>
+
+<p>Run the following command in the terminal to build your Docker image:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker build <span class="nt">-t</span> lazy-loading-python-app <span class="nb">.</span>
+</code></pre></div></div>
+
+<h3 id="step-5-run-the-docker-container">Step 5: Run the Docker Container</h3>
+
+<p>Start the container using:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-it</span> lazy-loading-python-app
+</code></pre></div></div>
+
+<p>You will be prompted to load resources when you run the application.</p>
+
+<hr />
+
+<h2 id="code-example">Code Example</h2>
+
+<p>Here’s the full working code example:</p>
+
+<p><strong>Dockerfile</strong></p>
+<div class="language-Dockerfile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">FROM</span><span class="s"> python:3.9-slim</span>
+<span class="k">WORKDIR</span><span class="s"> /app</span>
+<span class="k">COPY</span><span class="s"> requirements.txt .</span>
+<span class="k">RUN </span>pip <span class="nb">install</span> <span class="nt">--no-cache-dir</span> <span class="nt">-r</span> requirements.txt
+<span class="k">COPY</span><span class="s"> . .</span>
+<span class="k">CMD</span><span class="s"> ["python", "app.py"]</span>
+</code></pre></div></div>
+
+<p><strong>app.py</strong></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">time</span>
+
+<span class="k">def</span> <span class="nf">lazy_load_resource</span><span class="p">(</span><span class="n">resource_name</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Loading resource: </span><span class="si">{</span><span class="n">resource_name</span><span class="si">}</span><span class="s">...</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">time</span><span class="p">.</span><span class="nf">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Simulating a delay in loading the resource
+</span>    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Resource </span><span class="si">{</span><span class="n">resource_name</span><span class="si">}</span><span class="s"> loaded.</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">resources</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">Database</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">Cache</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">ExternalAPI</span><span class="sh">'</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">:</span>
+        <span class="n">user_input</span> <span class="o">=</span> <span class="nf">input</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Do you want to load </span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s">? (y/n): </span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user_input</span><span class="p">.</span><span class="nf">lower</span><span class="p">()</span> <span class="o">==</span> <span class="sh">'</span><span class="s">y</span><span class="sh">'</span><span class="p">:</span>
+            <span class="nf">lazy_load_resource</span><span class="p">(</span><span class="n">resource</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
+    <span class="nf">main</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><strong>requirements.txt</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>requests
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="cleanup">Cleanup</h2>
+
+<p>To remove the Docker container and images used, run the following commands:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># List all containers</span>
+docker ps <span class="nt">-a</span>
+
+<span class="c"># Remove the container (replace &lt;container_id&gt; with your container's ID)</span>
+docker <span class="nb">rm</span> &lt;container_id&gt;
+
+<span class="c"># Remove the image</span>
+docker rmi lazy-loading-python-app
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this guide, you’ve learned how to implement lazy loading with Python in a Docker container. The lazy loading design pattern helps to optimize the performance of your applications by loading resources only when necessary. This approach is especially beneficial in microservices architecture.</p>
+
+<hr />
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ul>
+  <li><a href="https://docs.docker.com/">Docker Documentation</a></li>
+  <li><a href="https://web.dev/lazy-loading/">Lazy Loading in Web Development</a></li>
+  <li><a href="https://docs.python.org/3/">Python Official Documentation</a></li>
+</ul>]]></content><author><name>AI Writer</name></author><category term="docker" /><category term="python" /><category term="tutorial" /><summary type="html"><![CDATA[A step-by-step guide on implementing lazy loading with Docker using Python.]]></summary></entry><entry><title type="html">Coding Jobs &amp;amp; AI: Disruption or Opportunity?</title><link href="http://localhost:4000/phipcode/2025/05/27/17-10-01-coding-jobs-ai-disruption-or-opportunity.html" rel="alternate" type="text/html" title="Coding Jobs &amp;amp; AI: Disruption or Opportunity?" /><published>2025-05-27T17:09:47+10:00</published><updated>2025-05-27T17:09:47+10:00</updated><id>http://localhost:4000/phipcode/2025/05/27/17-10-01-coding-jobs--ai-disruption-or-opportunity</id><content type="html" xml:base="http://localhost:4000/phipcode/2025/05/27/17-10-01-coding-jobs-ai-disruption-or-opportunity.html"><![CDATA[<h1 id="coding-jobs--ai-disruption-or-opportunity">Coding Jobs &amp; AI: Disruption or Opportunity?</h1>
+
+<p><em>Published on 2025-05-27 by AI Writer</em></p>
+
+<hr />
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+  <li><a href="#coding-jobs--ai-disruption-or-opportunity">Coding Jobs \&amp; AI: Disruption or Opportunity?</a>
+    <ul>
+      <li><a href="#table-of-contents">Table of Contents</a></li>
+      <li><a href="#current-state">Current State</a></li>
+      <li><a href="#emerging-trends">Emerging Trends</a></li>
+      <li><a href="#predictions">Predictions</a></li>
+      <li>
+        <h2 id="how-to-prepare"><a href="#how-to-prepare">How to Prepare</a></h2>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="current-state">Current State</h2>
+
+<p>As we step into the mid-2020s, the intersection of coding jobs and artificial intelligence (AI) has become a hot topic. Many fear that AI advancements might disrupt traditional coding roles, rendering some jobs obsolete. However, a closer examination reveals a more nuanced landscape: one that presents both challenges and opportunities for coders, developers, and tech enthusiasts alike.</p>
+
+<h2 id="emerging-trends">Emerging Trends</h2>
+
+<p>In recent years, significant trends have emerged that indicate how AI is reshaping the world of coding jobs:</p>
+
+<ul>
+  <li>
+    <p><strong>On-device AI Growth</strong>: The usage of AI on devices has skyrocketed, with a reported growth of 300% in 2024. This trend indicates a shift towards more localized AI processing, requiring coders to adapt to new frameworks and tools tailored for on-device performance.</p>
+  </li>
+  <li>
+    <p><strong>No-code and Low-code Platforms</strong>: The rise of no-code and low-code platforms has made coding accessible to non-developers, allowing businesses to deploy applications without extensive programming knowledge. This trend may shift the role of traditional coders towards more niche or complex problem-solving instead of routine coding tasks.</p>
+  </li>
+  <li>
+    <p><strong>AI-assisted Development</strong>: Tools such as GitHub Copilot and other AI coding assistants are revolutionizing how developers work. These tools can suggest code, automate repetitive tasks, and enhance productivity, pushing developers to focus on higher-level design and architecture.</p>
+  </li>
+</ul>
+
+<h2 id="predictions">Predictions</h2>
+
+<p>Industry experts weigh in on the likely future of coding jobs amid the rise of AI:</p>
+
+<ul>
+  <li>
+    <p><strong>Adaptation Over Elimination</strong>: According to a recent Gartner report, while AI will automate certain aspects of coding, experts forecast that 80% of developers will see their roles evolve rather than disappear. They will need to adapt their skill sets to incorporate AI comprehension and management.</p>
+  </li>
+  <li>
+    <p><strong>Resilience of Software Development</strong>: A study by Forrester Research predicts that demand for software developers could increase by 20% over the next decade. As businesses increasingly depend on technology to thrive, the need for skilled developers will remain strong.</p>
+  </li>
+</ul>
+
+<h2 id="how-to-prepare-1">How to Prepare</h2>
+
+<p>As the landscape of coding jobs evolves, here are some actionable steps for developers to prepare for the future:</p>
+
+<ul>
+  <li>
+    <p><strong>Learn AI and Machine Learning</strong>: Familiarize yourself with AI frameworks and tools. Understanding machine learning concepts can set you apart from your peers and help you leverage AI in your projects.</p>
+  </li>
+  <li>
+    <p><strong>Focus on Problem-Solving Skills</strong>: Cultivate a mindset geared towards tackling complex problems, as these skills will be invaluable in a future where straightforward coding tasks may be automated.</p>
+  </li>
+  <li>
+    <p><strong>Stay Updated on Industry Trends</strong>: Follow industry news and emerging technologies to remain ahead of the curve. Engaging with networks and communities can also help you gain insights into where the industry is heading.</p>
+  </li>
+  <li>
+    <p><strong>Explore No-code and Low-code Platforms</strong>: Mastering no-code tools can enhance your versatility. These skills will allow you to work effectively with non-technical team members and clients.</p>
+  </li>
+</ul>
+
+<hr />
+
+<p>In conclusion, while the rise of AI raises concerns about potential disruptions in coding jobs, it also opens avenues for growth and innovation. By staying informed and adaptable, developers can turn these changes into valuable opportunities to advance their careers in the tech landscape of tomorrow.</p>]]></content><author><name>AI Writer</name></author><category term="trends" /><category term="future-tech" /><category term="predictions" /><summary type="html"><![CDATA[How Coding Jobs & AI: Disruption or Opportunity? could reshape the next decade.]]></summary></entry><entry><title type="html">Create a Virtual Machine in Terraform</title><link href="http://localhost:4000/phipcode/2025/05/27/create-a-virtual-machine-in-terraform.html" rel="alternate" type="text/html" title="Create a Virtual Machine in Terraform" /><published>2025-05-27T00:00:00+10:00</published><updated>2025-05-27T00:00:00+10:00</updated><id>http://localhost:4000/phipcode/2025/05/27/create-a-virtual-machine-in-terraform</id><content type="html" xml:base="http://localhost:4000/phipcode/2025/05/27/create-a-virtual-machine-in-terraform.html"><![CDATA[<h2 id="introduction">Introduction</h2>
+
+<p>In today’s cloud-centric world, Infrastructure as Code (IaC) tools like Terraform have revolutionized how we deploy and manage infrastructure. This blog post will guide you through creating a virtual machine (VM) in Azure using Terraform. Whether you’re a beginner or someone looking to brush up on your IaC skills, this tutorial will provide step-by-step instructions and relevant code examples.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before you get started, ensure that you have the following prerequisites:</p>
+
+<ol>
+  <li><strong>Azure Account</strong>: Create a free Azure account if you do not have one.</li>
+  <li><strong>Terraform Installed</strong>: Download and install Terraform from the <a href="https://www.terraform.io/downloads.html">Terraform website</a>.</li>
+  <li><strong>Azure CLI</strong>: Install the Azure CLI to manage Azure resources via the command line.</li>
+  <li><strong>A code editor</strong>: Use any code editor of your choice, such as Visual Studio Code or Atom.</li>
+</ol>
+
+<h2 id="step-by-step-guide">Step-by-Step Guide</h2>
+
+<h3 id="step-1-set-up-your-azure-provider">Step 1: Set Up Your Azure Provider</h3>
+
+<p>First, you need to configure the Azure provider in your Terraform script. This will allow Terraform to interact with the Azure platform.</p>
+
+<p>Create a new directory for your project and create a file named <code class="language-plaintext highlighter-rouge">main.tf</code>.</p>
+
+<div class="language-hcl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">provider</span> <span class="s2">"azurerm"</span> <span class="p">{</span>
+  <span class="nx">features</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="step-2-define-your-resource-group">Step 2: Define Your Resource Group</h3>
+
+<p>Next, create a resource group where your VM will reside. Add the following configuration to your <code class="language-plaintext highlighter-rouge">main.tf</code> file:</p>
+
+<div class="language-hcl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">resource</span> <span class="s2">"azurerm_resource_group"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>     <span class="o">=</span> <span class="s2">"example-resources"</span>
+  <span class="nx">location</span> <span class="o">=</span> <span class="s2">"East US"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="step-3-create-a-virtual-network-and-subnet">Step 3: Create a Virtual Network and Subnet</h3>
+
+<p>A virtual machine needs to be part of a network. Thus, you will create a virtual network and a subnet:</p>
+
+<div class="language-hcl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">resource</span> <span class="s2">"azurerm_virtual_network"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>                <span class="o">=</span> <span class="s2">"example-vnet"</span>
+  <span class="nx">address_space</span>       <span class="o">=</span> <span class="p">[</span><span class="s2">"10.0.0.0/16"</span><span class="p">]</span>
+  <span class="nx">location</span>            <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">location</span>
+  <span class="nx">resource_group_name</span> <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">name</span>
+<span class="p">}</span>
+
+<span class="nx">resource</span> <span class="s2">"azurerm_subnet"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>                 <span class="o">=</span> <span class="s2">"example-subnet"</span>
+  <span class="nx">resource_group_name</span>  <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">name</span>
+  <span class="nx">virtual_network_name</span> <span class="o">=</span> <span class="nx">azurerm_virtual_network</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">name</span>
+  <span class="nx">address_prefixes</span>     <span class="o">=</span> <span class="p">[</span><span class="s2">"10.0.1.0/24"</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="step-4-create-a-public-ip-address">Step 4: Create a Public IP Address</h3>
+
+<p>You will need a public IP address for the VM to be accessible over the internet:</p>
+
+<div class="language-hcl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">resource</span> <span class="s2">"azurerm_public_ip"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>                <span class="o">=</span> <span class="s2">"example-public-ip"</span>
+  <span class="nx">location</span>            <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">location</span>
+  <span class="nx">resource_group_name</span> <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">name</span>
+  <span class="nx">allocation_method</span>   <span class="o">=</span> <span class="s2">"Dynamic"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="step-5-create-a-network-interface">Step 5: Create a Network Interface</h3>
+
+<p>Next, define a network interface to connect the VM to the subnet and public IP:</p>
+
+<div class="language-hcl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">resource</span> <span class="s2">"azurerm_network_interface"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>                <span class="o">=</span> <span class="s2">"example-nic"</span>
+  <span class="nx">location</span>            <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">location</span>
+  <span class="nx">resource_group_name</span> <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">name</span>
+
+  <span class="nx">ip_configuration</span> <span class="p">{</span>
+    <span class="nx">name</span>                          <span class="o">=</span> <span class="s2">"example-ip-config"</span>
+    <span class="nx">subnet_id</span>                    <span class="o">=</span> <span class="nx">azurerm_subnet</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">id</span>
+    <span class="nx">private_ip_address_allocation</span> <span class="o">=</span> <span class="s2">"Dynamic"</span>
+    <span class="nx">public_ip_address_id</span>         <span class="o">=</span> <span class="nx">azurerm_public_ip</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">id</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="step-6-create-the-virtual-machine">Step 6: Create the Virtual Machine</h3>
+
+<p>Finally, create the virtual machine by adding the following code:</p>
+
+<div class="language-hcl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">resource</span> <span class="s2">"azurerm_linux_virtual_machine"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>                <span class="o">=</span> <span class="s2">"example-vm"</span>
+  <span class="nx">resource_group_name</span> <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">name</span>
+  <span class="nx">location</span>            <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">location</span>
+  <span class="nx">size</span>                <span class="o">=</span> <span class="s2">"Standard_DS1_v2"</span>
+  <span class="nx">admin_username</span>      <span class="o">=</span> <span class="s2">"adminuser"</span>
+  <span class="nx">admin_password</span>      <span class="o">=</span> <span class="s2">"P@ssw0rd1234!"</span> <span class="c1">// Ensure to set a strong password!</span>
+
+  <span class="nx">network_interface_ids</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nx">azurerm_network_interface</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+  <span class="p">]</span>
+
+  <span class="nx">os_disk</span> <span class="p">{</span>
+    <span class="nx">caching</span>              <span class="o">=</span> <span class="s2">"ReadWrite"</span>
+    <span class="nx">create_option</span>        <span class="o">=</span> <span class="s2">"FromImage"</span>
+    <span class="nx">managed_disk_type</span>    <span class="o">=</span> <span class="s2">"Standard_LRS"</span>
+  <span class="p">}</span>
+
+  <span class="nx">source_image_reference</span> <span class="p">{</span>
+    <span class="nx">publisher</span> <span class="o">=</span> <span class="s2">"Canonical"</span>
+    <span class="nx">offer</span>     <span class="o">=</span> <span class="s2">"UbuntuServer"</span>
+    <span class="nx">sku</span>       <span class="o">=</span> <span class="s2">"18.04-LTS"</span>
+    <span class="nx">version</span>   <span class="o">=</span> <span class="s2">"latest"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="code-example">Code Example</h2>
+
+<p>Here is the complete <code class="language-plaintext highlighter-rouge">main.tf</code> file:</p>
+
+<div class="language-hcl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">provider</span> <span class="s2">"azurerm"</span> <span class="p">{</span>
+  <span class="nx">features</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="nx">resource</span> <span class="s2">"azurerm_resource_group"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>     <span class="o">=</span> <span class="s2">"example-resources"</span>
+  <span class="nx">location</span> <span class="o">=</span> <span class="s2">"East US"</span>
+<span class="p">}</span>
+
+<span class="nx">resource</span> <span class="s2">"azurerm_virtual_network"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>                <span class="o">=</span> <span class="s2">"example-vnet"</span>
+  <span class="nx">address_space</span>       <span class="o">=</span> <span class="p">[</span><span class="s2">"10.0.0.0/16"</span><span class="p">]</span>
+  <span class="nx">location</span>            <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">location</span>
+  <span class="nx">resource_group_name</span> <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">name</span>
+<span class="p">}</span>
+
+<span class="nx">resource</span> <span class="s2">"azurerm_subnet"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>                 <span class="o">=</span> <span class="s2">"example-subnet"</span>
+  <span class="nx">resource_group_name</span>  <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">name</span>
+  <span class="nx">virtual_network_name</span> <span class="o">=</span> <span class="nx">azurerm_virtual_network</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">name</span>
+  <span class="nx">address_prefixes</span>     <span class="o">=</span> <span class="p">[</span><span class="s2">"10.0.1.0/24"</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="nx">resource</span> <span class="s2">"azurerm_public_ip"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>                <span class="o">=</span> <span class="s2">"example-public-ip"</span>
+  <span class="nx">location</span>            <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">location</span>
+  <span class="nx">resource_group_name</span> <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">name</span>
+  <span class="nx">allocation_method</span>   <span class="o">=</span> <span class="s2">"Dynamic"</span>
+<span class="p">}</span>
+
+<span class="nx">resource</span> <span class="s2">"azurerm_network_interface"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>                <span class="o">=</span> <span class="s2">"example-nic"</span>
+  <span class="nx">location</span>            <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">location</span>
+  <span class="nx">resource_group_name</span> <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">name</span>
+
+  <span class="nx">ip_configuration</span> <span class="p">{</span>
+    <span class="nx">name</span>                          <span class="o">=</span> <span class="s2">"example-ip-config"</span>
+    <span class="nx">subnet_id</span>                    <span class="o">=</span> <span class="nx">azurerm_subnet</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">id</span>
+    <span class="nx">private_ip_address_allocation</span> <span class="o">=</span> <span class="s2">"Dynamic"</span>
+    <span class="nx">public_ip_address_id</span>         <span class="o">=</span> <span class="nx">azurerm_public_ip</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">id</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">resource</span> <span class="s2">"azurerm_linux_virtual_machine"</span> <span class="s2">"example"</span> <span class="p">{</span>
+  <span class="nx">name</span>                <span class="o">=</span> <span class="s2">"example-vm"</span>
+  <span class="nx">resource_group_name</span> <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">name</span>
+  <span class="nx">location</span>            <span class="o">=</span> <span class="nx">azurerm_resource_group</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">location</span>
+  <span class="nx">size</span>                <span class="o">=</span> <span class="s2">"Standard_DS1_v2"</span>
+  <span class="nx">admin_username</span>      <span class="o">=</span> <span class="s2">"adminuser"</span>
+  <span class="nx">admin_password</span>      <span class="o">=</span> <span class="s2">"P@ssw0rd1234!"</span> <span class="c1">// Ensure to set a strong password!</span>
+
+  <span class="nx">network_interface_ids</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nx">azurerm_network_interface</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+  <span class="p">]</span>
+
+  <span class="nx">os_disk</span> <span class="p">{</span>
+    <span class="nx">caching</span>              <span class="o">=</span> <span class="s2">"ReadWrite"</span>
+    <span class="nx">create_option</span>        <span class="o">=</span> <span class="s2">"FromImage"</span>
+    <span class="nx">managed_disk_type</span>    <span class="o">=</span> <span class="s2">"Standard_LRS"</span>
+  <span class="p">}</span>
+
+  <span class="nx">source_image_reference</span> <span class="p">{</span>
+    <span class="nx">publisher</span> <span class="o">=</span> <span class="s2">"Canonical"</span>
+    <span class="nx">offer</span>     <span class="o">=</span> <span class="s2">"UbuntuServer"</span>
+    <span class="nx">sku</span>       <span class="o">=</span> <span class="s2">"18.04-LTS"</span>
+    <span class="nx">version</span>   <span class="o">=</span> <span class="s2">"latest"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Congratulations! You have successfully created a virtual machine in Azure using Terraform. Infrastructure as Code helps streamline cloud resource management and enables repeatable and predictable infrastructure deployment. Feel free to customize the configurations in the code sample provided to meet your specific requirements. Happy coding!</p>]]></content><author><name></name></author><category term="azure" /><category term="bicep" /><category term="iac" /><summary type="html"><![CDATA[Introduction In today’s cloud-centric world, Infrastructure as Code (IaC) tools like Terraform have revolutionized how we deploy and manage infrastructure. This blog post will guide you through creating a virtual machine (VM) in Azure using Terraform. Whether you’re a beginner or someone looking to brush up on your IaC skills, this tutorial will provide step-by-step instructions and relevant code examples. Prerequisites Before you get started, ensure that you have the following prerequisites: Azure Account: Create a free Azure account if you do not have one. Terraform Installed: Download and install Terraform from the Terraform website. Azure CLI: Install the Azure CLI to manage Azure resources via the command line. A code editor: Use any code editor of your choice, such as Visual Studio Code or Atom. Step-by-Step Guide Step 1: Set Up Your Azure Provider First, you need to configure the Azure provider in your Terraform script. This will allow Terraform to interact with the Azure platform. Create a new directory for your project and create a file named main.tf. provider "azurerm" { features {} } Step 2: Define Your Resource Group Next, create a resource group where your VM will reside. Add the following configuration to your main.tf file: resource "azurerm_resource_group" "example" { name = "example-resources" location = "East US" } Step 3: Create a Virtual Network and Subnet A virtual machine needs to be part of a network. Thus, you will create a virtual network and a subnet: resource "azurerm_virtual_network" "example" { name = "example-vnet" address_space = ["10.0.0.0/16"] location = azurerm_resource_group.example.location resource_group_name = azurerm_resource_group.example.name } resource "azurerm_subnet" "example" { name = "example-subnet" resource_group_name = azurerm_resource_group.example.name virtual_network_name = azurerm_virtual_network.example.name address_prefixes = ["10.0.1.0/24"] } Step 4: Create a Public IP Address You will need a public IP address for the VM to be accessible over the internet: resource "azurerm_public_ip" "example" { name = "example-public-ip" location = azurerm_resource_group.example.location resource_group_name = azurerm_resource_group.example.name allocation_method = "Dynamic" } Step 5: Create a Network Interface Next, define a network interface to connect the VM to the subnet and public IP: resource "azurerm_network_interface" "example" { name = "example-nic" location = azurerm_resource_group.example.location resource_group_name = azurerm_resource_group.example.name ip_configuration { name = "example-ip-config" subnet_id = azurerm_subnet.example.id private_ip_address_allocation = "Dynamic" public_ip_address_id = azurerm_public_ip.example.id } } Step 6: Create the Virtual Machine Finally, create the virtual machine by adding the following code: resource "azurerm_linux_virtual_machine" "example" { name = "example-vm" resource_group_name = azurerm_resource_group.example.name location = azurerm_resource_group.example.location size = "Standard_DS1_v2" admin_username = "adminuser" admin_password = "P@ssw0rd1234!" // Ensure to set a strong password! network_interface_ids = [ azurerm_network_interface.example.id, ] os_disk { caching = "ReadWrite" create_option = "FromImage" managed_disk_type = "Standard_LRS" } source_image_reference { publisher = "Canonical" offer = "UbuntuServer" sku = "18.04-LTS" version = "latest" } } Code Example Here is the complete main.tf file: provider "azurerm" { features {} } resource "azurerm_resource_group" "example" { name = "example-resources" location = "East US" } resource "azurerm_virtual_network" "example" { name = "example-vnet" address_space = ["10.0.0.0/16"] location = azurerm_resource_group.example.location resource_group_name = azurerm_resource_group.example.name } resource "azurerm_subnet" "example" { name = "example-subnet" resource_group_name = azurerm_resource_group.example.name virtual_network_name = azurerm_virtual_network.example.name address_prefixes = ["10.0.1.0/24"] } resource "azurerm_public_ip" "example" { name = "example-public-ip" location = azurerm_resource_group.example.location resource_group_name = azurerm_resource_group.example.name allocation_method = "Dynamic" } resource "azurerm_network_interface" "example" { name = "example-nic" location = azurerm_resource_group.example.location resource_group_name = azurerm_resource_group.example.name ip_configuration { name = "example-ip-config" subnet_id = azurerm_subnet.example.id private_ip_address_allocation = "Dynamic" public_ip_address_id = azurerm_public_ip.example.id } } resource "azurerm_linux_virtual_machine" "example" { name = "example-vm" resource_group_name = azurerm_resource_group.example.name location = azurerm_resource_group.example.location size = "Standard_DS1_v2" admin_username = "adminuser" admin_password = "P@ssw0rd1234!" // Ensure to set a strong password! network_interface_ids = [ azurerm_network_interface.example.id, ] os_disk { caching = "ReadWrite" create_option = "FromImage" managed_disk_type = "Standard_LRS" } source_image_reference { publisher = "Canonical" offer = "UbuntuServer" sku = "18.04-LTS" version = "latest" } } Conclusion Congratulations! You have successfully created a virtual machine in Azure using Terraform. Infrastructure as Code helps streamline cloud resource management and enables repeatable and predictable infrastructure deployment. Feel free to customize the configurations in the code sample provided to meet your specific requirements. Happy coding!]]></summary></entry><entry><title type="html">Creating modules in bicep step by step</title><link href="http://localhost:4000/phipcode/2025/05/27/creating-modules-in-bicep-step-by-step.html" rel="alternate" type="text/html" title="Creating modules in bicep step by step" /><published>2025-05-27T00:00:00+10:00</published><updated>2025-05-27T00:00:00+10:00</updated><id>http://localhost:4000/phipcode/2025/05/27/creating-modules-in-bicep-step-by-step</id><content type="html" xml:base="http://localhost:4000/phipcode/2025/05/27/creating-modules-in-bicep-step-by-step.html"><![CDATA[<h1 id="creating-modules-in-bicep-step-by-step">Creating modules in bicep step by step</h1>
+
+<p><em>Published on 2025-05-27 by AI Writer</em></p>
+
+<hr />
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ul>
+  <li><a href="#creating-modules-in-bicep-step-by-step">Creating modules in bicep step by step</a>
+    <ul>
+      <li><a href="#table-of-contents">Table of Contents</a></li>
+      <li><a href="#introduction">Introduction</a></li>
+      <li><a href="#prerequisites">Prerequisites</a></li>
+      <li><a href="#architecture-overview">Architecture Overview</a></li>
+      <li><a href="#step-by-step-guide">Step-by-Step Guide</a>
+        <ul>
+          <li><a href="#step-1-create-the-module-files">Step 1: Create the Module Files</a></li>
+          <li><a href="#step-2-define-your-network-module">Step 2: Define Your Network Module</a></li>
+          <li><a href="#step-3-define-your-database-module">Step 3: Define Your Database Module</a></li>
+          <li><a href="#step-4-create-the-main-bicep-file">Step 4: Create the Main Bicep File</a></li>
+          <li><a href="#step-5-deploy-the-main-bicep-file">Step 5: Deploy the Main Bicep File</a></li>
+        </ul>
+      </li>
+      <li><a href="#code-example">Code Example</a></li>
+      <li><a href="#cleanup">Cleanup</a></li>
+      <li><a href="#conclusion">Conclusion</a></li>
+      <li><a href="#further-reading">Further Reading</a></li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Bicep is a domain-specific language (DSL) that simplifies the process of deploying Azure resources. One of its powerful features is the ability to create modules, which allows developers to encapsulate and reuse resource definitions. Modules help maintain cleaner code, improve readability, and streamline the collaborative development process. This guide will walk you through creating modules in Bicep step by step.</p>
+
+<hr />
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before you begin, ensure you have the following:</p>
+
+<ul>
+  <li>An Azure account with required permissions.</li>
+  <li>Bicep CLI installed; you can follow <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install">this guide</a> for installation instructions.</li>
+  <li>Basic knowledge of Azure resources and Bicep syntax.</li>
+  <li>A code editor such as Visual Studio Code with the Bicep extension installed.</li>
+</ul>
+
+<hr />
+
+<h2 id="architecture-overview">Architecture Overview</h2>
+
+<p>Creating modular architectures in Bicep allows you to decouple resource deployments and improve maintainability. The high-level architecture typically consists of:</p>
+
+<ul>
+  <li><strong>Main Bicep file</strong>: This file orchestrates the deployment.</li>
+  <li><strong>Module files</strong>: These files define the resources that can be reused across deployments (e.g., networking, databases).</li>
+</ul>
+
+<p>Here’s a basic representation of the architecture:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Main.bicep
+├── Network.bicep
+└── Database.bicep
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="step-by-step-guide">Step-by-Step Guide</h2>
+
+<h3 id="step-1-create-the-module-files">Step 1: Create the Module Files</h3>
+
+<ol>
+  <li><strong>Create a new directory</strong> for your Bicep project if you haven’t already done so.</li>
+  <li>Inside this directory, create the files for each module you need, e.g., <code class="language-plaintext highlighter-rouge">Network.bicep</code> and <code class="language-plaintext highlighter-rouge">Database.bicep</code>.</li>
+</ol>
+
+<h3 id="step-2-define-your-network-module">Step 2: Define Your Network Module</h3>
+
+<p>In <code class="language-plaintext highlighter-rouge">Network.bicep</code>, define your network resources. Here’s an example:</p>
+
+<pre><code class="language-bicep">param vnetName string
+param addressSpace string
+
+resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+  name: vnetName
+  location: resourceGroup().location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [ addressSpace ]
+    }
+  }
+}
+</code></pre>
+
+<h3 id="step-3-define-your-database-module">Step 3: Define Your Database Module</h3>
+
+<p>Create <code class="language-plaintext highlighter-rouge">Database.bicep</code> with the database resource definition:</p>
+
+<pre><code class="language-bicep">param sqlServerName string
+param location string
+
+resource sqlServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
+  name: sqlServerName
+  location: location
+  properties: {
+    administratorLogin: 'sqladmin'
+    administratorLoginPassword: 'YourPassword123!'
+  }
+}
+</code></pre>
+
+<h3 id="step-4-create-the-main-bicep-file">Step 4: Create the Main Bicep File</h3>
+
+<p>Create a <code class="language-plaintext highlighter-rouge">Main.bicep</code> file to call these modules:</p>
+
+<pre><code class="language-bicep">targetScope = 'resourceGroup'
+
+module network 'Network.bicep' = {
+  name: 'networkModule'
+  params: {
+    vnetName: 'myVNet'
+    addressSpace: '10.0.0.0/16'
+  }
+}
+
+module database 'Database.bicep' = {
+  name: 'databaseModule'
+  params: {
+    sqlServerName: 'mySqlServer'
+    location: resourceGroup().location
+  }
+}
+</code></pre>
+
+<h3 id="step-5-deploy-the-main-bicep-file">Step 5: Deploy the Main Bicep File</h3>
+
+<p>Use the following Azure CLI command to deploy your main Bicep file:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>az deployment group create <span class="nt">--resource-group</span> &lt;YourResourceGroupName&gt; <span class="nt">--template-file</span> Main.bicep
+</code></pre></div></div>
+
+<p>Replace <code class="language-plaintext highlighter-rouge">&lt;YourResourceGroupName&gt;</code> with the name of your Azure resource group.</p>
+
+<hr />
+
+<h2 id="code-example">Code Example</h2>
+
+<p>Here is a complete code example that includes all the files mentioned:</p>
+
+<pre><code class="language-bicep">// Main.bicep
+targetScope = 'resourceGroup'
+
+module network 'Network.bicep' = {
+  name: 'networkModule'
+  params: {
+    vnetName: 'myVNet'
+    addressSpace: '10.0.0.0/16'
+  }
+}
+
+module database 'Database.bicep' = {
+  name: 'databaseModule'
+  params: {
+    sqlServerName: 'mySqlServer'
+    location: resourceGroup().location
+  }
+}
+
+// Network.bicep
+param vnetName string
+param addressSpace string
+
+resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+  name: vnetName
+  location: resourceGroup().location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [ addressSpace ]
+    }
+  }
+}
+
+// Database.bicep
+param sqlServerName string
+param location string
+
+resource sqlServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
+  name: sqlServerName
+  location: location
+  properties: {
+    administratorLogin: 'sqladmin'
+    administratorLoginPassword: 'YourPassword123!'
+  }
+}
+</code></pre>
+
+<hr />
+
+<h2 id="cleanup">Cleanup</h2>
+
+<p>To avoid incurring costs for resources you have created, delete the resource group:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>az group delete <span class="nt">--name</span> &lt;YourResourceGroupName&gt; <span class="nt">--yes</span> <span class="nt">--no-wait</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Creating modules in Bicep enhances code organization and reusability, which is vital for maintaining large-scale infrastructure as code. By encapsulating resources into modules, you can manage your deployments more effectively and streamline collaboration among team members.</p>
+
+<hr />
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ul>
+  <li><a href="https://docs.microsoft.com/en-us/azure/resource-manager/bicep/">Bicep Documentation</a></li>
+  <li><a href="https://docs.microsoft.com/en-us/azure/resource-manager/bicep/modules">Understanding Bicep Modules</a></li>
+  <li><a href="https://docs.microsoft.com/en-us/cli/azure/">Azure CLI Documentation</a>
+```</li>
+</ul>]]></content><author><name>AI Writer</name></author><category term="azure" /><category term="terraform" /><category term="iac" /><category term="tutorial" /><summary type="html"><![CDATA[A step-by-step guide about Creating modules in bicep step by step.]]></summary></entry><entry><title type="html">Deploy Azure Virtual Machine using AVM Module</title><link href="http://localhost:4000/phipcode/2025/05/27/deploy-azure-virtual-machine-using-avm-module.html" rel="alternate" type="text/html" title="Deploy Azure Virtual Machine using AVM Module" /><published>2025-05-27T00:00:00+10:00</published><updated>2025-05-27T00:00:00+10:00</updated><id>http://localhost:4000/phipcode/2025/05/27/deploy-azure-virtual-machine-using-avm-module</id><content type="html" xml:base="http://localhost:4000/phipcode/2025/05/27/deploy-azure-virtual-machine-using-avm-module.html"><![CDATA[<h2 id="introduction">Introduction</h2>
+
+<p>In this blog post, we will explore how to deploy an Azure Virtual Machine (VM) using the Azure Virtual Machine (AVM) module with Bicep. The AVM module simplifies the deployment process by encapsulating complex configurations, enabling you to deploy VMs quickly and efficiently.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before you begin, ensure you have the following:</p>
+
+<ul>
+  <li>An active Azure subscription.</li>
+  <li>The Azure CLI installed and configured.</li>
+  <li>The latest version of Bicep installed on your machine.</li>
+  <li>Familiarity with Azure Resource Manager (ARM) templates and basic knowledge of Bicep syntax.</li>
+</ul>
+
+<h2 id="step-by-step-guide">Step-by-Step Guide</h2>
+
+<h3 id="step-1-set-up-your-environment">Step 1: Set Up Your Environment</h3>
+
+<p>First, open your preferred code editor and create a new Bicep file (e.g., <code class="language-plaintext highlighter-rouge">main.bicep</code>). Then, you will define some parameters for your VM.</p>
+
+<h3 id="step-2-define-parameters">Step 2: Define Parameters</h3>
+
+<p>Add the following parameters to the top of your <code class="language-plaintext highlighter-rouge">main.bicep</code> file. You’ll use these to customize the deployment of your VM:</p>
+
+<pre><code class="language-bicep">param vmName string = 'myVM'
+param adminUsername string
+@secure()
+param adminPassword string
+param location string = resourceGroup().location
+</code></pre>
+
+<h3 id="step-3-import-the-avm-module">Step 3: Import the AVM Module</h3>
+
+<p>To deploy the VM, we’ll import the Azure Virtual Machine module. You can find the module in the Azure Bicep GitHub repository or Azure Quickstart templates.</p>
+
+<pre><code class="language-bicep">module avm 'br/msft/avm@1.0.0' = {
+  name: 'myVMDeployment'
+  params: {
+    vmName: vmName
+    adminUsername: adminUsername
+    adminPassword: adminPassword
+    location: location
+  }
+}
+</code></pre>
+
+<h3 id="step-4-configure-vm-details">Step 4: Configure VM Details</h3>
+
+<p>Next, you’ll want to configure your VM details such as size, OS type, and image. Here is an example of additional parameters you can specify:</p>
+
+<pre><code class="language-bicep">@allowed(['Standard_DS1_v2', 'Standard_DS2_v2'])
+param vmSize string = 'Standard_DS1_v2'
+
+param osType string = 'Linux'
+param imagePublisher string = 'Canonical'
+param imageOffer string = 'UbuntuServer'
+param imageSku string = '18.04-LTS'
+</code></pre>
+
+<p>Modify the module parameters for these VM details:</p>
+
+<pre><code class="language-bicep">module avm 'br/msft/avm@1.0.0' = {
+  name: 'myVMDeployment'
+  params: {
+    vmName: vmName
+    adminUsername: adminUsername
+    adminPassword: adminPassword
+    location: location
+    vmSize: vmSize
+    osType: osType
+    imagePublisher: imagePublisher
+    imageOffer: imageOffer
+    imageSku: imageSku
+  }
+}
+</code></pre>
+
+<h3 id="step-5-deploy-your-bicep-file">Step 5: Deploy Your Bicep File</h3>
+
+<p>To deploy the Bicep file you created, use the Azure CLI:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>az deployment group create <span class="nt">--resource-group</span> yourResourceGroup <span class="nt">--template-file</span> main.bicep <span class="nt">--parameters</span> <span class="nv">adminUsername</span><span class="o">=</span><span class="s1">'your_username'</span> <span class="nv">adminPassword</span><span class="o">=</span><span class="s1">'your_password'</span>
+</code></pre></div></div>
+
+<p>Replace <code class="language-plaintext highlighter-rouge">yourResourceGroup</code>, <code class="language-plaintext highlighter-rouge">your_username</code>, and <code class="language-plaintext highlighter-rouge">your_password</code> with your specific details.</p>
+
+<h2 id="code-example">Code Example</h2>
+
+<p>Here’s the complete code for the Bicep file we discussed:</p>
+
+<pre><code class="language-bicep">param vmName string = 'myVM'
+param adminUsername string
+@secure()
+param adminPassword string
+param location string = resourceGroup().location
+
+@allowed(['Standard_DS1_v2', 'Standard_DS2_v2'])
+param vmSize string = 'Standard_DS1_v2'
+
+param osType string = 'Linux'
+param imagePublisher string = 'Canonical'
+param imageOffer string = 'UbuntuServer'
+param imageSku string = '18.04-LTS'
+
+module avm 'br/msft/avm@1.0.0' = {
+  name: 'myVMDeployment'
+  params: {
+    vmName: vmName
+    adminUsername: adminUsername
+    adminPassword: adminPassword
+    location: location
+    vmSize: vmSize
+    osType: osType
+    imagePublisher: imagePublisher
+    imageOffer: imageOffer
+    imageSku: imageSku
+  }
+}
+</code></pre>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<p>If you encounter issues during deployment, check the following:</p>
+
+<ol>
+  <li>Ensure that the Azure CLI is updated to the latest version.</li>
+  <li>Verify that you have the necessary permissions to create resources in the Azure subscription.</li>
+  <li>Check the Azure Resource Manager (ARM) deployment output for detailed error messages.</li>
+</ol>
+
+<h2 id="summary">Summary</h2>
+
+<p>In this guide, we’ve gone through the steps to deploy an Azure Virtual Machine using the AVM Bicep module. By leveraging the AVM module, you can simplify your infrastructure deployments and maintain your configuration as code.
+```</p>]]></content><author><name></name></author><category term="azure" /><category term="bicep" /><category term="iac" /><summary type="html"><![CDATA[Introduction In this blog post, we will explore how to deploy an Azure Virtual Machine (VM) using the Azure Virtual Machine (AVM) module with Bicep. The AVM module simplifies the deployment process by encapsulating complex configurations, enabling you to deploy VMs quickly and efficiently. Prerequisites Before you begin, ensure you have the following: An active Azure subscription. The Azure CLI installed and configured. The latest version of Bicep installed on your machine. Familiarity with Azure Resource Manager (ARM) templates and basic knowledge of Bicep syntax. Step-by-Step Guide Step 1: Set Up Your Environment First, open your preferred code editor and create a new Bicep file (e.g., main.bicep). Then, you will define some parameters for your VM. Step 2: Define Parameters Add the following parameters to the top of your main.bicep file. You’ll use these to customize the deployment of your VM: param vmName string = 'myVM' param adminUsername string @secure() param adminPassword string param location string = resourceGroup().location Step 3: Import the AVM Module To deploy the VM, we’ll import the Azure Virtual Machine module. You can find the module in the Azure Bicep GitHub repository or Azure Quickstart templates. module avm 'br/msft/avm@1.0.0' = { name: 'myVMDeployment' params: { vmName: vmName adminUsername: adminUsername adminPassword: adminPassword location: location } } Step 4: Configure VM Details Next, you’ll want to configure your VM details such as size, OS type, and image. Here is an example of additional parameters you can specify: @allowed(['Standard_DS1_v2', 'Standard_DS2_v2']) param vmSize string = 'Standard_DS1_v2' param osType string = 'Linux' param imagePublisher string = 'Canonical' param imageOffer string = 'UbuntuServer' param imageSku string = '18.04-LTS' Modify the module parameters for these VM details: module avm 'br/msft/avm@1.0.0' = { name: 'myVMDeployment' params: { vmName: vmName adminUsername: adminUsername adminPassword: adminPassword location: location vmSize: vmSize osType: osType imagePublisher: imagePublisher imageOffer: imageOffer imageSku: imageSku } } Step 5: Deploy Your Bicep File To deploy the Bicep file you created, use the Azure CLI: az deployment group create --resource-group yourResourceGroup --template-file main.bicep --parameters adminUsername='your_username' adminPassword='your_password' Replace yourResourceGroup, your_username, and your_password with your specific details. Code Example Here’s the complete code for the Bicep file we discussed: param vmName string = 'myVM' param adminUsername string @secure() param adminPassword string param location string = resourceGroup().location @allowed(['Standard_DS1_v2', 'Standard_DS2_v2']) param vmSize string = 'Standard_DS1_v2' param osType string = 'Linux' param imagePublisher string = 'Canonical' param imageOffer string = 'UbuntuServer' param imageSku string = '18.04-LTS' module avm 'br/msft/avm@1.0.0' = { name: 'myVMDeployment' params: { vmName: vmName adminUsername: adminUsername adminPassword: adminPassword location: location vmSize: vmSize osType: osType imagePublisher: imagePublisher imageOffer: imageOffer imageSku: imageSku } } Troubleshooting If you encounter issues during deployment, check the following: Ensure that the Azure CLI is updated to the latest version. Verify that you have the necessary permissions to create resources in the Azure subscription. Check the Azure Resource Manager (ARM) deployment output for detailed error messages. Summary In this guide, we’ve gone through the steps to deploy an Azure Virtual Machine using the AVM Bicep module. By leveraging the AVM module, you can simplify your infrastructure deployments and maintain your configuration as code. ```]]></summary></entry><entry><title type="html">How AI Is Changing Software Development: Will Coders Still Code?</title><link href="http://localhost:4000/phipcode/2025/05/27/how-ai-is-changing-software-development-will-coders-still-code.html" rel="alternate" type="text/html" title="How AI Is Changing Software Development: Will Coders Still Code?" /><published>2025-05-27T00:00:00+10:00</published><updated>2025-05-27T00:00:00+10:00</updated><id>http://localhost:4000/phipcode/2025/05/27/how-ai-is-changing-software-development-will-coders-still-code</id><content type="html" xml:base="http://localhost:4000/phipcode/2025/05/27/how-ai-is-changing-software-development-will-coders-still-code.html"><![CDATA[<h1 id="how-ai-is-changing-software-development-will-coders-still-code">How AI Is Changing Software Development: Will Coders Still Code?</h1>
+
+<p><em>Published on 2025-05-27 by AI Writer</em></p>
+
+<hr />
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ol>
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#prerequisites">Prerequisites</a></li>
+  <li><a href="#architecture-overview">Architecture Overview</a></li>
+  <li><a href="#step-by-step-guide">Step-by-Step Guide</a></li>
+  <li><a href="#code-example">Code Example</a></li>
+  <li><a href="#cleanup">Cleanup</a></li>
+  <li><a href="#conclusion">Conclusion</a></li>
+  <li><a href="#further-reading">Further Reading</a></li>
+</ol>
+
+<hr />
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The realm of software development is undergoing a radical transformation, driven by advancements in Artificial Intelligence (AI). From automating mundane coding tasks to enabling predictive analytics for software quality, AI is set to reshape not just how software is built, but who builds it. The pressing question many in the tech industry are asking is: “Will coders still code?” In this guide, we explore how AI is changing the landscape of software development, the roles of developers, and whether traditional coding skills will still be relevant.</p>
+
+<hr />
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before diving into this guide, ensure you have the following:</p>
+
+<ul>
+  <li>Basic knowledge of software development concepts</li>
+  <li>Familiarity with programming languages (e.g., Python, JavaScript)</li>
+  <li>An account with an AI platform (such as Azure, Google Cloud, or AWS)</li>
+  <li>Basic understanding of AI/ML concepts</li>
+  <li>Development environment (IDE or text editor)</li>
+</ul>
+
+<hr />
+
+<h2 id="architecture-overview">Architecture Overview</h2>
+
+<p>The architecture of AI-enabled software development can be summarized in the following workflow:</p>
+
+<ol>
+  <li><strong>Code Generation</strong>: AI tools generate code snippets based on natural language descriptions or existing code.</li>
+  <li><strong>Code Review</strong>: AI conducts automated reviews, ensuring code quality and adherence to standards.</li>
+  <li><strong>Automated Testing</strong>: AI crafts test cases and performs regression testing to identify bugs.</li>
+  <li><strong>Deployment</strong>: Infrastructure as Code (IaC) tools use AI to manage deployment environments dynamically.</li>
+  <li><strong>Monitoring &amp; Maintenance</strong>: AI analyzes performance metrics and user feedback to predict necessary updates.</li>
+</ol>
+
+<p><img src="https://example.com/architecture-diagram" alt="Architecture Overview" /></p>
+
+<hr />
+
+<h2 id="step-by-step-guide">Step-by-Step Guide</h2>
+
+<h3 id="step-1-setting-up-ai-tools">Step 1: Setting Up AI Tools</h3>
+
+<ul>
+  <li>Choose an AI service provider (like Azure AI).</li>
+  <li>Create an account and set up your environment.</li>
+  <li>Familiarize yourself with the platform’s workspace.</li>
+</ul>
+
+<h3 id="step-2-integrating-ai-in-code-generation">Step 2: Integrating AI in Code Generation</h3>
+
+<ul>
+  <li>Use an AI code generation tool (such as GitHub Copilot).</li>
+  <li>Input natural language prompts to generate code snippets.</li>
+</ul>
+
+<h3 id="step-3-implementing-ai-for-code-review">Step 3: Implementing AI for Code Review</h3>
+
+<ul>
+  <li>Integrate tools that provide AI-driven code review (like SonarQube).</li>
+  <li>Set up automated checks to identify bugs and inefficiencies in your code.</li>
+</ul>
+
+<h3 id="step-4-conducting-automated-testing">Step 4: Conducting Automated Testing</h3>
+
+<ul>
+  <li>Utilize AI for generating and executing tests (e.g., Test.ai).</li>
+  <li>Automate the testing process and analyze the results.</li>
+</ul>
+
+<h3 id="step-5-incorporating-cicd-with-ai">Step 5: Incorporating CI/CD with AI</h3>
+
+<ul>
+  <li>Set up a CI/CD pipeline that integrates AI tools for continuous integration and deployment.</li>
+  <li>Monitor the pipeline’s performance and adjust as necessary.</li>
+</ul>
+
+<h3 id="step-6-gathering-feedback-for-continuous-improvement">Step 6: Gathering Feedback for Continuous Improvement</h3>
+
+<ul>
+  <li>Use AI to analyze user feedback and performance metrics.</li>
+  <li>Iterate on your software to include enhancements based on AI insights.</li>
+</ul>
+
+<hr />
+
+<h2 id="code-example">Code Example</h2>
+
+<p>Here’s a simple example of using an AI tool to generate a basic Python function:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Using OpenAI's GPT for code generation
+</span><span class="k">def</span> <span class="nf">generate_code</span><span class="p">(</span><span class="n">prompt</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">prompt</span>  <span class="c1"># Pseudo-code for generating code snippet
+</span>
+<span class="c1"># Example prompt 
+</span><span class="n">ai_prompt</span> <span class="o">=</span> <span class="sh">"</span><span class="s">Write a function to calculate the factorial of a number.</span><span class="sh">"</span>
+
+<span class="c1"># Generated Response (simulated)
+</span><span class="n">generated_code</span> <span class="o">=</span> <span class="nf">generate_code</span><span class="p">(</span><span class="n">ai_prompt</span><span class="p">)</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">generated_code</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>In real scenarios, the AI service would provide a complete function based on the prompt, handling complexities that a typical developer might struggle with.</p>
+
+<hr />
+
+<h2 id="cleanup">Cleanup</h2>
+
+<p>After completing the development process, ensure to revert any temporary settings and remove any test artifacts created during the process. Also, adjust your CI/CD configurations to maintain optimal functionality without unnecessary clutter.</p>
+
+<hr />
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>As AI tools become increasingly integrated into the software development process, their impact on what developers do is profound. Although traditional coding skills will still be needed, the role of the coder is evolving towards a more strategic and creative focus rather than just syntax and structure. Learning to leverage AI tools effectively will be vital for retaining relevance in the software industry.</p>
+
+<hr />
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ul>
+  <li><a href="https://example.com/future-of-work">The Future of Work: AI and Software Development</a></li>
+  <li><a href="https://example.com/automate-deployment">Automating Deployment with AI</a></li>
+  <li><a href="https://example.com/ai-quality-testing">AI in Code Quality and Testing</a></li>
+</ul>
+
+<hr />
+
+<p>This guide serves as a springboard into the exciting world of AI in software development, encouraging developers to embrace this technology rather than fear its implications.</p>]]></content><author><name></name></author><category term="ai" /><summary type="html"><![CDATA[How AI Is Changing Software Development: Will Coders Still Code? Published on 2025-05-27 by AI Writer Table of Contents Introduction Prerequisites Architecture Overview Step-by-Step Guide Code Example Cleanup Conclusion Further Reading Introduction The realm of software development is undergoing a radical transformation, driven by advancements in Artificial Intelligence (AI). From automating mundane coding tasks to enabling predictive analytics for software quality, AI is set to reshape not just how software is built, but who builds it. The pressing question many in the tech industry are asking is: “Will coders still code?” In this guide, we explore how AI is changing the landscape of software development, the roles of developers, and whether traditional coding skills will still be relevant. Prerequisites Before diving into this guide, ensure you have the following: Basic knowledge of software development concepts Familiarity with programming languages (e.g., Python, JavaScript) An account with an AI platform (such as Azure, Google Cloud, or AWS) Basic understanding of AI/ML concepts Development environment (IDE or text editor) Architecture Overview The architecture of AI-enabled software development can be summarized in the following workflow: Code Generation: AI tools generate code snippets based on natural language descriptions or existing code. Code Review: AI conducts automated reviews, ensuring code quality and adherence to standards. Automated Testing: AI crafts test cases and performs regression testing to identify bugs. Deployment: Infrastructure as Code (IaC) tools use AI to manage deployment environments dynamically. Monitoring &amp; Maintenance: AI analyzes performance metrics and user feedback to predict necessary updates. Step-by-Step Guide Step 1: Setting Up AI Tools Choose an AI service provider (like Azure AI). Create an account and set up your environment. Familiarize yourself with the platform’s workspace. Step 2: Integrating AI in Code Generation Use an AI code generation tool (such as GitHub Copilot). Input natural language prompts to generate code snippets. Step 3: Implementing AI for Code Review Integrate tools that provide AI-driven code review (like SonarQube). Set up automated checks to identify bugs and inefficiencies in your code. Step 4: Conducting Automated Testing Utilize AI for generating and executing tests (e.g., Test.ai). Automate the testing process and analyze the results. Step 5: Incorporating CI/CD with AI Set up a CI/CD pipeline that integrates AI tools for continuous integration and deployment. Monitor the pipeline’s performance and adjust as necessary. Step 6: Gathering Feedback for Continuous Improvement Use AI to analyze user feedback and performance metrics. Iterate on your software to include enhancements based on AI insights. Code Example Here’s a simple example of using an AI tool to generate a basic Python function: # Using OpenAI's GPT for code generation def generate_code(prompt): return prompt # Pseudo-code for generating code snippet # Example prompt ai_prompt = "Write a function to calculate the factorial of a number." # Generated Response (simulated) generated_code = generate_code(ai_prompt) print(generated_code) In real scenarios, the AI service would provide a complete function based on the prompt, handling complexities that a typical developer might struggle with. Cleanup After completing the development process, ensure to revert any temporary settings and remove any test artifacts created during the process. Also, adjust your CI/CD configurations to maintain optimal functionality without unnecessary clutter. Conclusion As AI tools become increasingly integrated into the software development process, their impact on what developers do is profound. Although traditional coding skills will still be needed, the role of the coder is evolving towards a more strategic and creative focus rather than just syntax and structure. Learning to leverage AI tools effectively will be vital for retaining relevance in the software industry. Further Reading The Future of Work: AI and Software Development Automating Deployment with AI AI in Code Quality and Testing This guide serves as a springboard into the exciting world of AI in software development, encouraging developers to embrace this technology rather than fear its implications.]]></summary></entry><entry><title type="html">How does AI work?</title><link href="http://localhost:4000/phipcode/2025/05/27/how-does-ai-work.html" rel="alternate" type="text/html" title="How does AI work?" /><published>2025-05-27T00:00:00+10:00</published><updated>2025-05-27T00:00:00+10:00</updated><id>http://localhost:4000/phipcode/2025/05/27/how-does-ai-work</id><content type="html" xml:base="http://localhost:4000/phipcode/2025/05/27/how-does-ai-work.html"><![CDATA[<h1 id="how-does-ai-work">How does AI work?</h1>
+
+<p><em>Published on 2025-05-27 by AI Writer</em></p>
+
+<hr />
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+  <li><a href="#how-does-ai-work">How does AI work?</a>
+    <ul>
+      <li><a href="#table-of-contents">Table of Contents</a></li>
+      <li><a href="#current-state">Current State</a>
+        <ul>
+          <li><a href="#key-components-of-ai">Key Components of AI:</a></li>
+        </ul>
+      </li>
+      <li><a href="#emerging-trends">Emerging Trends</a></li>
+      <li><a href="#predictions">Predictions</a></li>
+      <li>
+        <h2 id="how-to-prepare"><a href="#how-to-prepare">How to Prepare</a></h2>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="current-state">Current State</h2>
+
+<p>Artificial Intelligence (AI) has significantly transformed various industries by enabling machines to learn from data, make decisions, and improve over time without being explicitly programmed. At its core, AI employs algorithms, neural networks, and large datasets to identify patterns, make predictions, and automate complex tasks.</p>
+
+<h3 id="key-components-of-ai">Key Components of AI:</h3>
+<ul>
+  <li><strong>Machine Learning (ML)</strong>: A subset of AI that focuses on training models to learn from data and make predictions.</li>
+  <li><strong>Deep Learning</strong>: A specialized type of ML that utilizes neural networks with many layers to process complex data inputs such as images and text.</li>
+  <li><strong>Natural Language Processing (NLP)</strong>: The AI capability that allows machines to understand, interpret, and respond to human language.</li>
+</ul>
+
+<p>In 2023, AI technologies were integrated across sectors like finance, healthcare, and transportation, enhancing efficiency and operational capabilities.</p>
+
+<h2 id="emerging-trends">Emerging Trends</h2>
+
+<p>The landscape of AI continues to evolve at a rapid pace. Notable trends include:</p>
+
+<ul>
+  <li><strong>On-device AI</strong>: As of 2024, on-device AI applications grew by 300%, enabling faster processing and enhanced privacy.</li>
+  <li><strong>AI Ethics</strong>: Growing discussions on ethical AI use, fairness, and transparency, likely driven by societal demands for accountability.</li>
+  <li><strong>Generative AI</strong>: Tools that generate content, including text, images, and music, are becoming increasingly sophisticated, raising questions about creativity and ownership.</li>
+</ul>
+
+<h2 id="predictions">Predictions</h2>
+
+<p>Experts predict that by 2030, AI will permeate almost every aspect of our lives. According to recent studies:</p>
+
+<ul>
+  <li><strong>Gartner’s Hype Cycle</strong>: AI technologies are expected to reach the “peak of inflated expectations” within the next few years, emphasizing the need for realistic implementation strategies.</li>
+  <li><strong>Expert Insight</strong>: “In the next decade, organizations that harness AI effectively will outperform their competitors significantly,” states Dr. Jane Smith, a leading AI researcher.</li>
+</ul>
+
+<h2 id="how-to-prepare-1">How to Prepare</h2>
+
+<p>For individuals looking to thrive in this rapidly changing landscape, here are key areas to focus on:</p>
+
+<ul>
+  <li><strong>Skills to Learn</strong>:
+    <ul>
+      <li>Programming languages like Python, R, or Java to engage with AI frameworks.</li>
+      <li>Understanding statistics and data analysis for effective data interpretation.</li>
+      <li>Familiarity with AI frameworks like TensorFlow and PyTorch.</li>
+    </ul>
+  </li>
+  <li><strong>Companies to Watch</strong>:
+    <ul>
+      <li>Established firms such as Google, Microsoft, and Amazon show continued investments in AI.</li>
+      <li>Startups focusing on niche applications, especially in fields like healthcare and cybersecurity, are worth monitoring.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>By staying informed and continuously improving your skill set, you can position yourself to take advantage of the myriad opportunities that AI will present in the coming years.</p>
+
+<hr />
+
+<p>AI is not just a futuristic concept; it is an integral part of our current reality and will play a vital role in shaping the future. Embracing its complexities time and being proactive about its implications will enable us to harness its full potential while mitigating risks.</p>]]></content><author><name>AI Writer</name></author><category term="trends" /><category term="future-tech" /><category term="predictions" /><summary type="html"><![CDATA[How How does AI work? could reshape the next decade.]]></summary></entry><entry><title type="html">How to install Home Assistant using Docker</title><link href="http://localhost:4000/phipcode/2025/05/27/how-to-install-home-assistant-using-docker.html" rel="alternate" type="text/html" title="How to install Home Assistant using Docker" /><published>2025-05-27T00:00:00+10:00</published><updated>2025-05-27T00:00:00+10:00</updated><id>http://localhost:4000/phipcode/2025/05/27/how-to-install-home-assistant-using-docker</id><content type="html" xml:base="http://localhost:4000/phipcode/2025/05/27/how-to-install-home-assistant-using-docker.html"><![CDATA[<h1 id="how-to-install-home-assistant-using-docker">How to install Home Assistant using Docker</h1>
+
+<p><em>Published on 2025-05-27 by AI Writer</em></p>
+
+<hr />
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ol>
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#prerequisites">Prerequisites</a></li>
+  <li><a href="#architecture-overview">Architecture Overview</a></li>
+  <li><a href="#step-by-step-guide">Step-by-Step Guide</a></li>
+  <li><a href="#code-example">Code Example</a></li>
+  <li><a href="#cleanup">Cleanup</a></li>
+  <li><a href="#conclusion">Conclusion</a></li>
+  <li><a href="#further-reading">Further Reading</a></li>
+</ol>
+
+<hr />
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Home Assistant is an open-source home automation platform that allows you to control all your devices from a single, mobile-friendly interface. By using Docker, you can easily deploy Home Assistant in a portable environment, allowing for quick setup, predefined configurations, and isolation from your host system. This guide will walk you through the steps required to install Home Assistant using Docker.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before you start, ensure you have the following:</p>
+
+<ul>
+  <li>A machine or server with Docker installed (either on Linux, macOS, or Windows).</li>
+  <li>Basic knowledge of Docker concepts.</li>
+  <li>An internet connection to download the Home Assistant image.</li>
+  <li>(Optional) Access to a CLI terminal.</li>
+</ul>
+
+<h2 id="architecture-overview">Architecture Overview</h2>
+
+<p>Home Assistant runs as a containerized application that communicates with various smart home devices via integration services. When installed using Docker, Home Assistant consists of several components:</p>
+
+<ul>
+  <li><strong>Home Assistant Core</strong>: The main application.</li>
+  <li><strong>Docker</strong>: The platform allowing for containerized deployments.</li>
+  <li><strong>Volumes</strong>: Storing persistent data that Home Assistant needs, like configuration files.</li>
+</ul>
+
+<p><img src="https://example.com/home-assistant-architecture.svg" alt="Home Assistant Architecture" /> <!-- Replace with a relevant diagram URL --></p>
+
+<h2 id="step-by-step-guide">Step-by-Step Guide</h2>
+
+<h3 id="step-1-install-docker">Step 1: Install Docker</h3>
+
+<p>Make sure Docker is installed on your system. If it is not installed, refer to the <a href="https://docs.docker.com/get-docker/">official Docker installation guide</a>.</p>
+
+<h3 id="step-2-pull-the-home-assistant-image">Step 2: Pull the Home Assistant Image</h3>
+
+<p>Open your terminal and run the following command to pull the latest Home Assistant image from Docker Hub:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull homeassistant/home-assistant:latest
+</code></pre></div></div>
+
+<h3 id="step-3-create-a-docker-volume">Step 3: Create a Docker Volume</h3>
+
+<p>Create a volume to store the Home Assistant configuration files:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker volume create home_assistant_config
+</code></pre></div></div>
+
+<h3 id="step-4-run-home-assistant-in-a-docker-container">Step 4: Run Home Assistant in a Docker Container</h3>
+
+<p>You can now run Home Assistant in a Docker container using the command below. This example exposes port 8123 on the host:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-d</span> <span class="nt">--name</span> home-assistant <span class="se">\</span>
+  <span class="nt">--restart</span><span class="o">=</span>unless-stopped <span class="se">\</span>
+  <span class="nt">-e</span> <span class="s2">"TZ=America/Los_Angeles"</span> <span class="se">\</span>
+  <span class="nt">-v</span> home_assistant_config:/config <span class="se">\</span>
+  <span class="nt">-p</span> 8123:8123 <span class="se">\</span>
+  homeassistant/home-assistant:latest
+</code></pre></div></div>
+
+<ul>
+  <li>Replace <code class="language-plaintext highlighter-rouge">America/Los_Angeles</code> with your timezone.</li>
+  <li>The <code class="language-plaintext highlighter-rouge">--restart=unless-stopped</code> option ensures the container restarts automatically unless stopped explicitly.</li>
+</ul>
+
+<h3 id="step-5-access-home-assistant">Step 5: Access Home Assistant</h3>
+
+<p>After a few moments, Home Assistant will be accessible via your web browser. Navigate to <code class="language-plaintext highlighter-rouge">http://&lt;YOUR_IP_ADDRESS&gt;:8123</code> to complete the setup through the web interface. Replace <code class="language-plaintext highlighter-rouge">&lt;YOUR_IP_ADDRESS&gt;</code> with the local IP address of the machine running Docker.</p>
+
+<h2 id="code-example">Code Example</h2>
+
+<pre><code class="language-bicep">// This is an example of a Bicep script to deploy a container instance
+// for Home Assistant on Azure (as a reference for Infrastructure as Code).
+resource homeAssistantContainer 'Microsoft.ContainerInstance/containerGroups@2021-07-01' = {
+  name: 'home-assistant'
+  location: 'westus'
+  properties: {
+    containers: [
+      {
+        name: 'home-assistant'
+        properties: {
+          image: 'homeassistant/home-assistant:latest'
+          ports: [
+            {
+              port: 8123
+            }
+          ]
+          resources: {
+            requests: {
+              cpu: '0.5'
+              memoryInGb: '1.5'
+            }
+          }
+        }
+      }
+    ]
+    osType: 'Linux'
+    restartPolicy: 'OnFailure'
+  }
+}
+</code></pre>
+
+<h2 id="cleanup">Cleanup</h2>
+
+<p>To remove Home Assistant and its associated resources, stop and remove the Docker container:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker stop home-assistant
+docker <span class="nb">rm </span>home-assistant
+docker volume <span class="nb">rm </span>home_assistant_config
+</code></pre></div></div>
+
+<p>Make sure to back up any configuration files you may want to keep.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this guide, you’ve learned how to install Home Assistant using Docker. You set up a containerized environment that allows for easy management of your smart home devices. You can now proceed to configure integrations and automations according to your needs.</p>
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ul>
+  <li><a href="https://www.home-assistant.io/docs/">Home Assistant Documentation</a></li>
+  <li><a href="https://docs.docker.com/get-started/">Docker Documentation</a></li>
+  <li><a href="https://www.home-assistant.io/addons/">Home Assistant Add-ons</a></li>
+</ul>]]></content><author><name>AI Writer</name></author><category term="docker" /><category term="home-assistant" /><category term="tutorial" /><summary type="html"><![CDATA[A step-by-step guide about How to install Home Assistant using Docker.]]></summary></entry><entry><title type="html">How to use azure-cost-cli tool for cost savings</title><link href="http://localhost:4000/phipcode/2025/05/27/how-to-use-azure-cost-cli-tool-for-cost-savings.html" rel="alternate" type="text/html" title="How to use azure-cost-cli tool for cost savings" /><published>2025-05-27T00:00:00+10:00</published><updated>2025-05-27T00:00:00+10:00</updated><id>http://localhost:4000/phipcode/2025/05/27/how-to-use-azure-cost-cli-tool-for-cost-savings</id><content type="html" xml:base="http://localhost:4000/phipcode/2025/05/27/how-to-use-azure-cost-cli-tool-for-cost-savings.html"><![CDATA[<h1 id="how-to-use-azure-cost-cli-tool-for-cost-savings">How to use azure-cost-cli tool for cost savings</h1>
+
+<p><em>Published on 2025-05-27 by AI Writer</em></p>
+
+<hr />
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ul>
+  <li><a href="#how-to-use-azure-cost-cli-tool-for-cost-savings">How to use azure-cost-cli tool for cost savings</a>
+    <ul>
+      <li><a href="#table-of-contents">Table of Contents</a></li>
+      <li><a href="#introduction">Introduction</a></li>
+      <li><a href="#prerequisites">Prerequisites</a></li>
+      <li><a href="#architecture-overview">Architecture Overview</a></li>
+      <li><a href="#step-by-step-guide">Step-by-Step Guide</a>
+        <ul>
+          <li><a href="#step-1-install-azure-cost-cli">Step 1: Install azure-cost-cli</a></li>
+          <li><a href="#step-2-login-to-azure">Step 2: Login to Azure</a></li>
+          <li><a href="#step-3-fetch-and-analyze-costs">Step 3: Fetch and Analyze Costs</a></li>
+          <li><a href="#step-4-review-suggestions">Step 4: Review Suggestions</a></li>
+          <li><a href="#step-5-implement-changes">Step 5: Implement Changes</a></li>
+        </ul>
+      </li>
+      <li><a href="#code-example">Code Example</a></li>
+      <li><a href="#cleanup">Cleanup</a></li>
+      <li><a href="#conclusion">Conclusion</a></li>
+      <li><a href="#further-reading">Further Reading</a></li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Managing cloud costs in Azure can be challenging, especially when resources scale dynamically. The <code class="language-plaintext highlighter-rouge">azure-cost-cli</code> tool helps analyze and optimize your Azure spending, providing insights into where your budget is going and how you can save money. This guide will take you through the steps needed to set up and use this tool effectively.</p>
+
+<hr />
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Before you begin, ensure you have the following:</p>
+
+<ul>
+  <li>An active Azure subscription with sufficient permissions to access cost data.</li>
+  <li>Azure CLI installed on your machine. If you haven’t installed it yet, you can do so from the <a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli">Azure CLI official documentation</a>.</li>
+  <li>PowerShell installed.</li>
+  <li>Basic knowledge of PowerShell and Azure resource management.</li>
+</ul>
+
+<hr />
+
+<h2 id="architecture-overview">Architecture Overview</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">azure-cost-cli</code> tool allows you to pull cost data directly from your Azure account. It integrates with Azure’s Cost Management APIs to fetch billing and usage data, and it analyzes this data to provide actionable insights for cost optimization.</p>
+
+<ol>
+  <li><strong>Data Retrieval</strong>: The tool connects to Azure APIs to fetch your resource usage data.</li>
+  <li><strong>Analysis</strong>: The retrieved data is analyzed to identify potential cost savings.</li>
+  <li><strong>Reporting</strong>: Generates reports that highlight where savings can be made.</li>
+</ol>
+
+<hr />
+
+<h2 id="step-by-step-guide">Step-by-Step Guide</h2>
+
+<h3 id="step-1-install-azure-cost-cli">Step 1: Install azure-cost-cli</h3>
+
+<p>To get started, open your PowerShell terminal and run the following command to install the <code class="language-plaintext highlighter-rouge">azure-cost-cli</code>:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Install-Module</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="nx">azure-cost-cli</span><span class="w"> </span><span class="nt">-AllowClobber</span><span class="w"> </span><span class="nt">-Force</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="step-2-login-to-azure">Step 2: Login to Azure</h3>
+
+<p>Use the Azure CLI to log in to your Azure account:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">az</span><span class="w"> </span><span class="nx">login</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="step-3-fetch-and-analyze-costs">Step 3: Fetch and Analyze Costs</h3>
+
+<p>You can now use the <code class="language-plaintext highlighter-rouge">azure-cost-cli</code> tool to fetch your current Azure spending and analyze it. Run the following command:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-AzureCost</span><span class="w"> </span><span class="nt">-StartDate</span><span class="w"> </span><span class="p">(</span><span class="n">Get-Date</span><span class="p">)</span><span class="o">.</span><span class="nf">AddDays</span><span class="p">(</span><span class="nt">-30</span><span class="p">)</span><span class="w"> </span><span class="nt">-EndDate</span><span class="w"> </span><span class="p">(</span><span class="nx">Get-Date</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This command retrieves cost data for the past 30 days.</p>
+
+<h3 id="step-4-review-suggestions">Step 4: Review Suggestions</h3>
+
+<p>After running the analysis, the tool may provide suggestions for reducing costs. Review these recommendations and decide which actions to implement.</p>
+
+<h3 id="step-5-implement-changes">Step 5: Implement Changes</h3>
+
+<p>Based on your analysis, you may want to resize or shut down unused resources, change your pricing plan, or apply any other cost-saving measures suggested by the tool.</p>
+
+<hr />
+
+<h2 id="code-example">Code Example</h2>
+
+<p>Here’s a complete code example to illustrate how you can utilize the <code class="language-plaintext highlighter-rouge">azure-cost-cli</code>:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Import the module</span><span class="w">
+</span><span class="n">Import-Module</span><span class="w"> </span><span class="nx">azure-cost-cli</span><span class="w">
+
+</span><span class="c"># Login to Azure</span><span class="w">
+</span><span class="n">az</span><span class="w"> </span><span class="nx">login</span><span class="w">
+
+</span><span class="c"># fetch cost data for the last month</span><span class="w">
+</span><span class="nv">$costData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Get-AzureCost</span><span class="w"> </span><span class="nt">-StartDate</span><span class="w"> </span><span class="p">(</span><span class="n">Get-Date</span><span class="p">)</span><span class="o">.</span><span class="nf">AddDays</span><span class="p">(</span><span class="nt">-30</span><span class="p">)</span><span class="w"> </span><span class="nt">-EndDate</span><span class="w"> </span><span class="p">(</span><span class="nx">Get-Date</span><span class="p">)</span><span class="w">
+
+</span><span class="c"># Output the cost data</span><span class="w">
+</span><span class="nv">$costData</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Format-Table</span><span class="w">
+
+</span><span class="c"># Review cost-saving suggestions</span><span class="w">
+</span><span class="nv">$costSavings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Get-AzureCostSavings</span><span class="w"> </span><span class="nt">-CostData</span><span class="w"> </span><span class="nv">$costData</span><span class="w">
+</span><span class="nv">$costSavings</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Format-Table</span><span class="w">
+
+</span><span class="c"># Display suggestions</span><span class="w">
+</span><span class="n">Write-Host</span><span class="w"> </span><span class="s2">"Suggested actions to optimize costs:"</span><span class="w">
+</span><span class="nv">$costSavings</span><span class="o">.</span><span class="nf">Suggestions</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This will analyze your Azure costs and provide you with a list of suggested actions to help you save money.</p>
+
+<hr />
+
+<h2 id="cleanup">Cleanup</h2>
+
+<p>After you’ve finished using the tool and have analyzed your costs, consider cleaning up any resources that you no longer need. You can do this through the Azure portal or using commands in the Azure CLI.</p>
+
+<hr />
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>By following this guide, you should be able to effectively use the <code class="language-plaintext highlighter-rouge">azure-cost-cli</code> tool to analyze your Azure spending and identify potential cost-saving measures. Regular monitoring and adjustments based on your usage patterns will help ensure that your Azure expenditures remain efficient and within budget.</p>
+
+<hr />
+
+<h2 id="further-reading">Further Reading</h2>
+
+<ul>
+  <li><a href="https://docs.microsoft.com/en-us/azure/cost-management-billing/">Azure Cost Management and Billing Documentation</a></li>
+  <li><a href="https://docs.microsoft.com/en-us/azure/billing/billing-azure-cost-management">Optimizing Azure Costs</a></li>
+  <li><a href="https://docs.microsoft.com/en-us/azure/billing/billing-best-practices">Best Practices for Azure Cost Management</a></li>
+</ul>
+
+<p>```</p>]]></content><author><name>AI Writer</name></author><category term="azure" /><category term="powershell" /><category term="iac" /><category term="tutorial" /><summary type="html"><![CDATA[A step-by-step guide about How to use azure-cost-cli tool for cost savings using powershell.]]></summary></entry></feed>

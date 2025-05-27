@@ -1,0 +1,27 @@
+# Jekyll output and cache
+_site/
+.jekyll-cache/
+.jekyll-metadata
+
+# Ruby dependencies
+.bundle/
+vendor/
+Gemfile.lock
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Node modules (if you use npm for assets)
+node_modules/
+
+# Ignore backup files
+*~
