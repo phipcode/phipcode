@@ -27,11 +27,11 @@ Currently, I'm on a journey exploring and learning more about tech and programmi
 ## 📝 Recent Blog Posts
 
 <!-- BLOG-POST-LIST:START -->
+- [Installing Grafana &amp; Prometheus for Proxmox Monitoring](https://phiptech.com/installing-grafana-prometheus-for-proxmox-monitoring/)
 - [Deploying virtual machines  using Azure Verified Modules with Bicep](https://phiptech.com/deploying-virtual-machines-using-azure-verfied-modules-with-bicep/)
 - [How to Set Up Local HTTPS with Custom Certificates Using Nginx Proxy Manager](https://phiptech.com/how-to-set-up-https-locally-using-nginx-proxy-manager/)
 - [Deploying Multiple Self-Hosted DevOps Agents Using Docker](https://phiptech.com/how-to-run-multiple-azure-devops-self-hosted-agents-using-docker-and-a-dockerfile/)
 - [How to Install Oh My Posh on Windows &lpar;PowerShell 7 + winget&rpar;](https://phiptech.com/how-to-install-oh-my-posh-on-windows-powershell-7-winget/)
-- [Virtualising OPNsense on Proxmox as your Router](https://phiptech.com/virtualizing-opnsense-on-proxmox-as-your-router/)
 <!-- BLOG-POST-LIST:END -->
 
 ---
