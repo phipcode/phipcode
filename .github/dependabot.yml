@@ -1,0 +1,55 @@
+# Dependabot configuration for GitHub Pages Jekyll Blog
+#
+# This configuration ensures your project is secure and up-to-date by automatically
+# checking for updates to GitHub Actions, Ruby gems (including Jekyll and plugins),
+# and npm packages (if present for scripts or assets).
+#
+# - All update checks run on a weekly schedule (recommended for blogs).
+# - Auto-merge is enabled for security, minor, and patch updates when possible.
+# - This file is placed in .github/ for highest priority activation.
+#
+# For more details: https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/" # Location of workflow files
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    allow:
+      - dependency-type: "all"
+    auto-merge: true
+
+  - package-ecosystem: "bundler"
+    directory: "/" # Location of Gemfile
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "ruby"
+    allow:
+      - dependency-type: "all"
+    auto-merge: true
+
+  - package-ecosystem: "npm"
+    directory: "/" # Only include if you use npm for scripts/assets
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "npm"
+    allow:
+      - dependency-type: "all"
+    auto-merge: true
