@@ -1,0 +1,78 @@
+name: Test Dependabot Configuration
+
+on:
+  push:
+    paths:
+      - '.github/dependabot.yml'
+  pull_request:
+    paths:
+      - '.github/dependabot.yml'
+
+jobs:
+  test-dependabot-config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Install dependencies
+        run: |
+          pip install PyYAML
+      
+      - name: Validate Dependabot Configuration
+        run: |
+          python3 -c "
+          import yaml
+          import os
+          from pathlib import Path
+          
+          print('🔍 Testing Dependabot configuration...')
+          
+          config_file = Path('.github/dependabot.yml')
+          if not config_file.exists():
+              print('❌ Dependabot config file not found!')
+              exit(1)
+          
+          try:
+              with open(config_file) as f:
+                  config = yaml.safe_load(f)
+              print('✅ YAML syntax is valid')
+          except yaml.YAMLError as e:
+              print(f'❌ YAML syntax error: {e}')
+              exit(1)
+          
+          if config.get('version') != 2:
+              print('❌ Missing or incorrect version field')
+              exit(1)
+          
+          if 'updates' not in config:
+              print('❌ Missing updates section')
+              exit(1)
+          
+          print('✅ Basic structure is valid')
+          
+          # Check each ecosystem
+          for update in config['updates']:
+              ecosystem = update.get('package-ecosystem')
+              print(f'📦 Found {ecosystem} ecosystem')
+              
+              if ecosystem == 'github-actions':
+                  workflows_dir = Path('.github/workflows')
+                  if workflows_dir.exists():
+                      workflow_files = list(workflows_dir.glob('*.yml')) + list(workflows_dir.glob('*.yaml'))
+                      if workflow_files:
+                          print(f'✅ Found {len(workflow_files)} workflow files')
+                      else:
+                          print('❌ No workflow files found')
+                          exit(1)
+                  else:
+                      print('❌ .github/workflows directory not found')
+                      exit(1)
+          
+          print('✅ Dependabot configuration is valid and ready to use!')
+          "

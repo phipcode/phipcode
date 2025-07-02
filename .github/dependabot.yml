@@ -1,0 +1,29 @@
+# Dependabot configuration for GitHub Pages Jekyll Blog
+#
+# This configuration ensures your GitHub Actions workflows are secure and
+# up-to-date by automatically checking for updates to action dependencies.
+#
+# - Update checks run on a weekly schedule (recommended for blogs).
+# - Auto-merge is enabled for security, minor, and patch updates when possible.
+# - This file is placed in .github/ for highest priority activation.
+#
+# Note: This blog uses GitHub Pages default Jekyll setup without custom Gemfile
+# or package.json, so only GitHub Actions monitoring is needed.
+#
+# For more details: https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"  # Location of workflow files
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    allow:
+      - dependency-type: "all"
+    auto-merge: true
