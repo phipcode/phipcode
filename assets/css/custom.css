@@ -80,6 +80,74 @@ body {
     padding-top: 1.5rem;
 }
 
+/* AI Disclaimer Styling */
+.ai-disclaimer {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border: 2px solid #f39c12;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.15);
+  transition: all 0.3s ease;
+}
+
+.ai-disclaimer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.2);
+}
+
+.ai-disclaimer-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+
+.ai-disclaimer-content h3 {
+  color: #d68910;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.ai-disclaimer-content p {
+  color: #856404;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Dark mode styles for AI disclaimer */
+[data-theme="dark"] .ai-disclaimer {
+  background: linear-gradient(135deg, #2c2416 0%, #3d3018 100%);
+  border-color: #f39c12;
+  color: #ffd700;
+}
+
+[data-theme="dark"] .ai-disclaimer-content h3 {
+  color: #f39c12;
+}
+
+[data-theme="dark"] .ai-disclaimer-content p {
+  color: #e6c77d;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .ai-disclaimer {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  
+  .ai-disclaimer-icon {
+    align-self: center;
+    margin-top: 0;
+  }
+}
+
 /* Featured Post Styling */
 .featured-post {
   background: var(--featured-bg, #f5f5f5);
