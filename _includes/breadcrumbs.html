@@ -1,0 +1,47 @@
+{% unless page.url == "/" %}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol>
+    <li>
+      <a href="{{ '/' | relative_url }}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+        Home
+      </a>
+    </li>
+    
+    {% if page.layout == "post" %}
+      <li>
+        <a href="{{ '/posts/' | relative_url }}">Posts</a>
+      </li>
+      {% if page.categories.size > 0 %}
+        <li>
+          <a href="{{ '/category/' | append: page.categories.first | slugify | append: '/' | relative_url }}">
+            {{ page.categories.first | capitalize }}
+          </a>
+        </li>
+      {% endif %}
+      <li aria-current="page">{{ page.title }}</li>
+      
+    {% elsif page.layout == "page" or page.layout == "default" %}
+      {% assign url_parts = page.url | split: "/" %}
+      {% assign current_path = "" %}
+      {% for part in url_parts %}
+        {% unless part == "" %}
+          {% assign current_path = current_path | append: "/" | append: part %}
+          {% if forloop.last %}
+            <li aria-current="page">{{ page.title | default: part | capitalize }}</li>
+          {% else %}
+            <li>
+              <a href="{{ current_path | relative_url }}">{{ part | capitalize }}</a>
+            </li>
+          {% endif %}
+        {% endunless %}
+      {% endfor %}
+      
+    {% else %}
+      <li aria-current="page">{{ page.title }}</li>
+    {% endif %}
+  </ol>
+</nav>
+{% endunless %} 

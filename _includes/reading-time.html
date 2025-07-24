@@ -1,0 +1,22 @@
+{% comment %}
+  Calculate reading time more accurately
+  - Standard reading speed: 200 words per minute
+  - Code blocks read slower: ~100 words per minute
+  - Minimum reading time: 1 minute
+{% endcomment %}
+
+{% assign words = include.content | strip_html | number_of_words %}
+{% assign code_blocks = include.content | split: '```' | size | minus: 1 | divided_by: 2 %}
+{% assign code_words = code_blocks | times: 50 %}
+{% assign reading_words = words | minus: code_words %}
+{% assign code_time = code_words | divided_by: 100.0 %}
+{% assign text_time = reading_words | divided_by: 200.0 %}
+{% assign total_time = code_time | plus: text_time | ceil %}
+{% if total_time < 1 %}{% assign total_time = 1 %}{% endif %}
+
+<span class="reading-time" title="Estimated reading time">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px; vertical-align: text-bottom;">
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+  </svg>
+  {{ total_time }} min read
+</span> 

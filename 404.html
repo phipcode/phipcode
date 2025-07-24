@@ -1,0 +1,89 @@
+---
+layout: default
+title: "Page Not Found"
+permalink: /404.html
+---
+
+<div class="error-page">
+  <div class="error-container">
+    <div class="error-visual">
+      <div class="error-code">404</div>
+      <div class="error-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" opacity="0.3"/>
+        </svg>
+      </div>
+    </div>
+    
+    <div class="error-content">
+      <h1>Oops! Page Not Found</h1>
+      <p class="error-message">
+        The page you're looking for seems to have wandered off into the cloud. 
+        Don't worry though - even the best DevOps engineers sometimes take a wrong turn!
+      </p>
+      
+      <div class="error-suggestions">
+        <h3>Here are some things you can try:</h3>
+        <ul>
+          <li><strong>Check the URL:</strong> Make sure you typed the address correctly</li>
+          <li><strong>Go back:</strong> Use your browser's back button to return</li>
+          <li><strong>Start fresh:</strong> Visit our homepage to find what you need</li>
+          <li><strong>Search:</strong> Use the search box below to find specific content</li>
+        </ul>
+      </div>
+
+      <div class="error-help">
+        <h4>Popular Topics:</h4>
+        <div class="topic-tags">
+          <a href="{{ '/tags/#azure' | relative_url }}" class="topic-tag">Azure</a>
+          <a href="{{ '/tags/#devops' | relative_url }}" class="topic-tag">DevOps</a>
+          <a href="{{ '/tags/#docker' | relative_url }}" class="topic-tag">Docker</a>
+          <a href="{{ '/tags/#terraform' | relative_url }}" class="topic-tag">Terraform</a>
+          <a href="{{ '/tags/#ai' | relative_url }}" class="topic-tag">AI</a>
+          <a href="{{ '/tags/#tutorial' | relative_url }}" class="topic-tag">Tutorials</a>
+        </div>
+      </div>
+      
+      <div class="error-actions">
+        <a href="{{ '/' | relative_url }}" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+          Go Home
+        </a>
+        
+        <a href="{{ '/tags/' | relative_url }}" class="btn btn-secondary">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/>
+          </svg>
+          Browse Topics
+        </a>
+        
+        <a href="{{ '/about/' | relative_url }}" class="btn btn-secondary">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+          About Me
+        </a>
+      </div>
+      
+      <div class="recent-posts">
+        <h4>Recent Posts</h4>
+        <div class="recent-posts-list">
+          {% for post in site.posts limit:5 %}
+            <a href="{{ post.url | relative_url }}" class="recent-post-item">
+              <div class="recent-post-info">
+                <h5>{{ post.title }}</h5>
+                <p>{{ post.date | date: "%B %d, %Y" }}</p>
+              </div>
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+              </svg>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

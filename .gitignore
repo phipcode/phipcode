@@ -2,11 +2,17 @@
 _site/
 .jekyll-cache/
 .jekyll-metadata
+.sass-cache/
 
 # Ruby dependencies
 .bundle/
 vendor/
 Gemfile.lock
+*.gem
+
+# Ruby version files (if using rbenv/rvm)
+.ruby-version
+.rbenv-version
 
 # VS Code settings
 .vscode/

@@ -1,8 +1,6 @@
 ---
 layout: default
 ---
-
-
 <!-- AI Disclaimer/Warning Notice -->
 <div class="ai-disclaimer">
   <div class="ai-disclaimer-icon">⚠️</div>
@@ -40,10 +38,7 @@ layout: default
           <time datetime="{{ post.date | date_to_xmlschema }}">
             {{ post.date | date: "%B %d, %Y" }}
           </time>
-          <span class="reading-time">
-            {% assign words = post.content | number_of_words %}
-            {% if words < 360 %}• 1 min read{% else %}• {{ words | divided_by: 180 }} min read{% endif %}
-          </span>
+          {% include reading-time.html content=post.content %}
           
           {% if post.tags.size > 0 %}
             <div class="post-tags">
