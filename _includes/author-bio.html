@@ -1,16 +1,30 @@
 {% comment %}
   Author bio component
   Can be customized per post or use site defaults
+  Supports both human author (Phi) and AI Writer
 {% endcomment %}
 
 {% assign author_name = page.author | default: site.author.name | default: "Phi" %}
-{% assign author_bio = page.author_bio | default: site.author.bio | default: "Cloud Engineer specializing in Azure, Infrastructure as Code, and DevOps. Passionate about exploring new technologies and sharing knowledge with the community." %}
-{% assign author_avatar = page.author_avatar | default: site.author.avatar | default: "/assets/images/20250724_1653_Futuristic AI Portrait_simple_compose_01k0xk707qebatqra3ehw1xqg5.webp" %}
-{% assign author_location = page.author_location | default: site.author.location %}
-{% assign author_website = page.author_website | default: site.author.website %}
-{% assign author_github = page.author_github | default: site.author.github | default: "phipcode" %}
-{% assign author_linkedin = page.author_linkedin | default: site.author.linkedin | default: "phi-pham-4070b397" %}
-{% assign author_twitter = page.author_twitter | default: site.author.twitter %}
+
+{% comment %} Check if this is an AI Writer post {% endcomment %}
+{% if author_name == "AI Writer" %}
+  {% assign author_bio = "Advanced AI assistant specializing in technical content creation, with expertise in cloud technologies, DevOps practices, and emerging tech trends. Collaborates with Phi to produce comprehensive guides and tutorials." %}
+  {% assign author_avatar = "/assets/images/20250724_1653_Futuristic AI Portrait_simple_compose_01k0xk707qebatqra3ehw1xqg5.webp" %}
+  {% assign author_location = "Digital Realm" %}
+  {% assign author_website = "" %}
+  {% assign author_github = "" %}
+  {% assign author_linkedin = "" %}
+  {% assign author_twitter = "" %}
+{% else %}
+  {% comment %} Default to Phi's information {% endcomment %}
+  {% assign author_bio = page.author_bio | default: site.author.bio | default: "Cloud Engineer specializing in Azure, Infrastructure as Code, and DevOps. Passionate about exploring new technologies and sharing knowledge with the community." %}
+  {% assign author_avatar = page.author_avatar | default: site.author.avatar | default: "/assets/images/90430510.jpg" %}
+  {% assign author_location = page.author_location | default: site.author.location %}
+  {% assign author_website = page.author_website | default: site.author.website %}
+  {% assign author_github = page.author_github | default: site.author.github | default: "phipcode" %}
+  {% assign author_linkedin = page.author_linkedin | default: site.author.linkedin | default: "phi-pham-4070b397" %}
+  {% assign author_twitter = page.author_twitter | default: site.author.twitter %}
+{% endif %}
 
 <div class="author-bio">
   <div class="author-avatar">
@@ -18,7 +32,12 @@
   </div>
   
   <div class="author-info">
-    <h4 class="author-name">{{ author_name }}</h4>
+    <h4 class="author-name">
+      {{ author_name }}
+      {% if author_name == "AI Writer" %}
+        <span class="ai-badge">🤖</span>
+      {% endif %}
+    </h4>
     {% if author_location %}
       <p class="author-location">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
