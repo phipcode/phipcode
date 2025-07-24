@@ -7,6 +7,15 @@ layout: default
   <p>{{ site.description }}</p>
 </div>
 
+<!-- AI Disclaimer/Warning Notice -->
+<div class="ai-disclaimer">
+  <div class="ai-disclaimer-icon">⚠️</div>
+  <div class="ai-disclaimer-content">
+    <h3>Important Notice: AI-Generated Content</h3>
+    <p>The guides and articles on this blog are produced with the assistance of artificial intelligence. While we strive for accuracy, the information may not always be correct, complete, or up-to-date. Please verify important information independently and use your own judgment when following any technical guidance provided here.</p>
+  </div>
+</div>
+
 <!-- Featured Post Section -->
 {% assign featured_post = site.posts | where_exp: "post", "post.featured == true" | first %}
 {% if featured_post %}
