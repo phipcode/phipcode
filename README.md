@@ -42,5 +42,6 @@ Currently, I'm on a journey exploring and learning more about tech and programmi
 - [Blog](https://phiptech.com)
 
 ---
+![Metrics](./metrics.svg)
 
 > 💡 “Learning never exhausts the mind.” — Leonardo da Vinci
