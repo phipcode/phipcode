@@ -23,7 +23,7 @@ jobs:
       # =========================
       - name: Generate Neon Blog Cards from RSS Feed
         run: |
-          curl -fsSL https://phiptech.com/feed/ -o feed.xml
+          curl -fsSL --connect-timeout 15 --max-time 60 https://phiptech.com/feed/ -o feed.xml
 
           python3 <<'PYEOF'
           import re
@@ -51,6 +51,7 @@ jobs:
                   items.append({"title": title, "link": link})
 
           cards = ""
+          max_badge_title_length = 50
 
           # Neon color palette for badges
           neon_colors = [
@@ -71,8 +72,13 @@ jobs:
                   title = title_node.text if title_node is not None and title_node.text else "Blog Post"
                   link = link_node.text if link_node is not None and link_node.text else "#"
 
+              title = re.sub(r"<[^>]+>", "", title).strip() or "Blog Post"
+              parsed_link = urllib.parse.urlparse(link)
+              if parsed_link.scheme not in ("http", "https"):
+                  link = "#"
+
               # URL encode the title and truncate if too long
-              safe_title = urllib.parse.quote(title[:50])
+              safe_title = urllib.parse.quote(title[:max_badge_title_length])
 
               # Cycle through neon colors
               color = neon_colors[idx % len(neon_colors)]
@@ -124,7 +130,7 @@ jobs:
             echo "Changes detected in README.md"
 
             # Only commit and push on scheduled runs or manual dispatch
-            if [ "${{ github.event_name }}" == "pull_request" ]; then
+            if [[ "${{ github.event_name }}" == "pull_request" ]]; then
               echo "Running on PR - validation only, skipping commit/push"
               echo "✓ Workflow validation successful"
             else
