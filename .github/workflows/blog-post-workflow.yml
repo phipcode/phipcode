@@ -18,9 +18,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # =========================
-      # Generate Neon Badge Cards
-      # =========================
+      - name: Bypass Cloudflare for GitHub Action
+        uses: xiaotianxt/bypass-cloudflare-for-github-action@v2.1.0
+        with:
+          cf_account_id: ${{ secrets.CF_ACCOUNT_ID }}
+          cf_zone_id: ${{ secrets.CF_ZONE_ID }}
+          cf_api_token: ${{ secrets.CF_API_TOKEN }}
+
       - name: Generate Neon Blog Cards from RSS Feed
         run: |
           curl -fsSL --connect-timeout 15 --max-time 60 https://phiptech.com/feed/ -o feed.xml
@@ -33,7 +37,6 @@ jobs:
           with open("feed.xml", "r", encoding="utf-8", errors="replace") as f:
               feed_xml = f.read()
 
-          # Remove invalid XML control characters that break strict parsing
           feed_xml = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F]", "", feed_xml)
 
           try:
@@ -52,15 +55,7 @@ jobs:
 
           cards = ""
           max_badge_title_length = 50
-
-          # Neon color palette for badges
-          neon_colors = [
-              "00FF41",  # Neon green
-              "00D9FF",  # Neon cyan
-              "FF00FF",  # Neon magenta
-              "FFD700",  # Neon gold
-              "FF1493"   # Neon pink
-          ]
+          neon_colors = ["00FF41", "00D9FF", "FF00FF", "FFD700", "FF1493"]
 
           for idx, item in enumerate(items):
               if isinstance(item, dict):
@@ -77,13 +72,9 @@ jobs:
               if parsed_link.scheme not in ("http", "https"):
                   link = "#"
 
-              # URL encode the title and truncate if too long
               safe_title = urllib.parse.quote(title[:max_badge_title_length])
-
-              # Cycle through neon colors
               color = neon_colors[idx % len(neon_colors)]
 
-              # Create neon-style badge
               card = f'''
           <p align="center">
             <a href="{link}">
@@ -93,7 +84,6 @@ jobs:
           '''
               cards += card
 
-          # Update README
           with open("README.md", "r", encoding="utf-8") as f:
               readme = f.read()
 
@@ -116,9 +106,6 @@ jobs:
           print(f"Successfully updated README with {len(items)} blog posts")
           PYEOF
 
-      # =========================
-      # Commit Changes
-      # =========================
       - name: Commit README updates
         run: |
           git config user.name "github-actions[bot]"
@@ -129,7 +116,6 @@ jobs:
           else
             echo "Changes detected in README.md"
 
-            # Only commit and push on scheduled runs or manual dispatch
             if [[ "${{ github.event_name }}" == "pull_request" ]]; then
               echo "Running on PR - validation only, skipping commit/push"
               echo "✓ Workflow validation successful"
