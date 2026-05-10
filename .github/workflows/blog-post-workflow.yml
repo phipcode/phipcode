@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '0 0 * * 0'
   workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/blog-post-workflow.yml'
+      - 'README.md'
 
 jobs:
   update-readme-with-blog:
@@ -97,8 +101,16 @@ jobs:
           if git diff --quiet README.md; then
             echo "No changes to commit"
           else
-            git add README.md
-            git commit -m "Update blog cards with latest posts"
-            git push
-            echo "Successfully committed and pushed changes"
+            echo "Changes detected in README.md"
+
+            # Only commit and push on scheduled runs or manual dispatch
+            if [ "${{ github.event_name }}" == "pull_request" ]; then
+              echo "Running on PR - validation only, skipping commit/push"
+              echo "✓ Workflow validation successful"
+            else
+              git add README.md
+              git commit -m "Update blog cards with latest posts"
+              git push
+              echo "Successfully committed and pushed changes"
+            fi
           fi
