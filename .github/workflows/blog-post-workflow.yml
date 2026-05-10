@@ -28,46 +28,46 @@ jobs:
         run: |
           curl -s https://phiptech.com/feed/ > feed.xml
 
-          python3 << 'EOF'
-import xml.etree.ElementTree as ET
+          python3 <<'PYEOF'
+          import xml.etree.ElementTree as ET
 
-with open("feed.xml", "r", encoding="utf-8") as f:
-    tree = ET.parse(f)
+          with open("feed.xml", "r", encoding="utf-8") as f:
+              tree = ET.parse(f)
 
-root = tree.getroot()
-items = root.findall(".//item")[:5]
+          root = tree.getroot()
+          items = root.findall(".//item")[:5]
 
-cards = ""
+          cards = ""
 
-for item in items:
-    title = item.find("title").text
-    link = item.find("link").text
+          for item in items:
+              title = item.find("title").text
+              link = item.find("link").text
 
-    safe_title = title.replace(" ", "%20")
+              safe_title = title.replace(" ", "%20")
 
-    card = f"""
-<p align="center">
-  <a href="{link}">
-    <img src="https://img.shields.io/badge/{safe_title}-Read%20Post-0D1117?style=for-the-badge&logo=ghost&logoColor=white"/>
-  </a>
-</p>
-"""
-    cards += card
+              card = f"""
+          <p align="center">
+            <a href="{link}">
+              <img src="https://img.shields.io/badge/{safe_title}-Read%20Post-0D1117?style=for-the-badge&logo=ghost&logoColor=white"/>
+            </a>
+          </p>
+          """
+              cards += card
 
-with open("README.md", "r", encoding="utf-8") as f:
-    readme = f.read()
+          with open("README.md", "r", encoding="utf-8") as f:
+              readme = f.read()
 
-start_tag = "<!-- BLOG-CARDS:START -->"
-end_tag = "<!-- BLOG-CARDS:END -->"
+          start_tag = "<!-- BLOG-CARDS:START -->"
+          end_tag = "<!-- BLOG-CARDS:END -->"
 
-start = readme.find(start_tag) + len(start_tag)
-end = readme.find(end_tag)
+          start = readme.find(start_tag) + len(start_tag)
+          end = readme.find(end_tag)
 
-new_readme = readme[:start] + "\n" + cards + "\n" + readme[end:]
+          new_readme = readme[:start] + "\n" + cards + "\n" + readme[end:]
 
-with open("README.md", "w", encoding="utf-8") as f:
-    f.write(new_readme)
-EOF
+          with open("README.md", "w", encoding="utf-8") as f:
+              f.write(new_readme)
+          PYEOF
 
       # =========================
       # STEP 3: Commit changes
