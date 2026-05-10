@@ -1,17 +1,136 @@
 name: Latest blog post workflow
+
 on:
   schedule:
-    - cron: '0 0 * * 0' # Runs at 00:00 (midnight) UTC every Sunday
+    - cron: '0 0 * * 0'
   workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/blog-post-workflow.yml'
+      - 'README.md'
 
 jobs:
   update-readme-with-blog:
-    name: Update README with latest blog posts
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - uses: actions/checkout@v4
-      - uses: gautamkrishnar/blog-post-workflow@v1
-        with:
-          feed_list: "https://phiptech.com/rss/"
+
+      # =========================
+      # Generate Neon Badge Cards
+      # =========================
+      - name: Generate Neon Blog Cards from RSS Feed
+        run: |
+          curl -fsSL https://phiptech.com/feed/ -o feed.xml
+
+          python3 <<'PYEOF'
+          import re
+          import xml.etree.ElementTree as ET
+          import urllib.parse
+
+          with open("feed.xml", "r", encoding="utf-8", errors="replace") as f:
+              feed_xml = f.read()
+
+          # Remove invalid XML control characters that break strict parsing
+          feed_xml = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F]", "", feed_xml)
+
+          try:
+              root = ET.fromstring(feed_xml)
+              items = root.findall(".//item")[:5]
+          except ET.ParseError as e:
+              print(f"Warning: strict XML parsing failed ({e}); falling back to tolerant extraction")
+              raw_items = re.findall(r"<item\b.*?>.*?</item>", feed_xml, flags=re.DOTALL | re.IGNORECASE)[:5]
+              items = []
+              for raw_item in raw_items:
+                  title_match = re.search(r"<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>", raw_item, flags=re.DOTALL | re.IGNORECASE)
+                  link_match = re.search(r"<link>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</link>", raw_item, flags=re.DOTALL | re.IGNORECASE)
+                  title = title_match.group(1).strip() if title_match else "Blog Post"
+                  link = link_match.group(1).strip() if link_match else "#"
+                  items.append({"title": title, "link": link})
+
+          cards = ""
+
+          # Neon color palette for badges
+          neon_colors = [
+              "00FF41",  # Neon green
+              "00D9FF",  # Neon cyan
+              "FF00FF",  # Neon magenta
+              "FFD700",  # Neon gold
+              "FF1493"   # Neon pink
+          ]
+
+          for idx, item in enumerate(items):
+              if isinstance(item, dict):
+                  title = item.get("title") or "Blog Post"
+                  link = item.get("link") or "#"
+              else:
+                  title_node = item.find("title")
+                  link_node = item.find("link")
+                  title = title_node.text if title_node is not None and title_node.text else "Blog Post"
+                  link = link_node.text if link_node is not None and link_node.text else "#"
+
+              # URL encode the title and truncate if too long
+              safe_title = urllib.parse.quote(title[:50])
+
+              # Cycle through neon colors
+              color = neon_colors[idx % len(neon_colors)]
+
+              # Create neon-style badge
+              card = f'''
+          <p align="center">
+            <a href="{link}">
+              <img src="https://img.shields.io/badge/{safe_title}-Read%20Post-{color}?style=for-the-badge&logo=ghost&logoColor=000000"/>
+            </a>
+          </p>
+          '''
+              cards += card
+
+          # Update README
+          with open("README.md", "r", encoding="utf-8") as f:
+              readme = f.read()
+
+          start_tag = "<!-- BLOG-CARDS:START -->"
+          end_tag = "<!-- BLOG-CARDS:END -->"
+
+          start = readme.find(start_tag)
+          end = readme.find(end_tag)
+
+          if start == -1 or end == -1:
+              print("Error: Could not find BLOG-CARDS tags in README.md")
+              exit(1)
+
+          start += len(start_tag)
+          new_readme = readme[:start] + "\n" + cards + "\n" + readme[end:]
+
+          with open("README.md", "w", encoding="utf-8") as f:
+              f.write(new_readme)
+
+          print(f"Successfully updated README with {len(items)} blog posts")
+          PYEOF
+
+      # =========================
+      # Commit Changes
+      # =========================
+      - name: Commit README updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet README.md; then
+            echo "No changes to commit"
+          else
+            echo "Changes detected in README.md"
+
+            # Only commit and push on scheduled runs or manual dispatch
+            if [ "${{ github.event_name }}" == "pull_request" ]; then
+              echo "Running on PR - validation only, skipping commit/push"
+              echo "✓ Workflow validation successful"
+            else
+              git add README.md
+              git commit -m "Update blog cards with latest posts"
+              git push
+              echo "Successfully committed and pushed changes"
+            fi
+          fi
