@@ -15,22 +15,17 @@ jobs:
       - uses: actions/checkout@v4
 
       # =========================
-      # STEP 1: Blog Post List
+      # Generate Neon Badge Cards
       # =========================
-      - uses: gautamkrishnar/blog-post-workflow@v1
-        with:
-          feed_list: "https://phiptech.com/feed/"
-
-      # =========================
-      # STEP 2: Generate Cards
-      # =========================
-      - name: Generate Blog Cards from RSS
+      - name: Generate Neon Blog Cards from RSS Feed
         run: |
           curl -s https://phiptech.com/feed/ > feed.xml
 
           python3 <<'PYEOF'
           import xml.etree.ElementTree as ET
+          import urllib.parse
 
+          # Parse RSS feed
           with open("feed.xml", "r", encoding="utf-8") as f:
               tree = ET.parse(f)
 
@@ -39,44 +34,71 @@ jobs:
 
           cards = ""
 
-          for item in items:
-              title = item.find("title").text
-              link = item.find("link").text
+          # Neon color palette for badges
+          neon_colors = [
+              "00FF41",  # Neon green
+              "00D9FF",  # Neon cyan
+              "FF00FF",  # Neon magenta
+              "FFD700",  # Neon gold
+              "FF1493"   # Neon pink
+          ]
 
-              safe_title = title.replace(" ", "%20")
+          for idx, item in enumerate(items):
+              title = item.find("title").text if item.find("title") is not None else "Blog Post"
+              link = item.find("link").text if item.find("link") is not None else "#"
 
-              card = f"""
+              # URL encode the title and truncate if too long
+              safe_title = urllib.parse.quote(title[:50])
+
+              # Cycle through neon colors
+              color = neon_colors[idx % len(neon_colors)]
+
+              # Create neon-style badge
+              card = f'''
           <p align="center">
             <a href="{link}">
-              <img src="https://img.shields.io/badge/{safe_title}-Read%20Post-0D1117?style=for-the-badge&logo=ghost&logoColor=white"/>
+              <img src="https://img.shields.io/badge/{safe_title}-Read%20Post-{color}?style=for-the-badge&logo=ghost&logoColor=000000"/>
             </a>
           </p>
-          """
+          '''
               cards += card
 
+          # Update README
           with open("README.md", "r", encoding="utf-8") as f:
               readme = f.read()
 
           start_tag = "<!-- BLOG-CARDS:START -->"
           end_tag = "<!-- BLOG-CARDS:END -->"
 
-          start = readme.find(start_tag) + len(start_tag)
+          start = readme.find(start_tag)
           end = readme.find(end_tag)
 
+          if start == -1 or end == -1:
+              print("Error: Could not find BLOG-CARDS tags in README.md")
+              exit(1)
+
+          start += len(start_tag)
           new_readme = readme[:start] + "\n" + cards + "\n" + readme[end:]
 
           with open("README.md", "w", encoding="utf-8") as f:
               f.write(new_readme)
+
+          print(f"Successfully updated README with {len(items)} blog posts")
           PYEOF
 
       # =========================
-      # STEP 3: Commit changes
+      # Commit Changes
       # =========================
       - name: Commit README updates
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add README.md
-          git commit -m "Update blog cards" || echo "No changes"
-          git push
+          if git diff --quiet README.md; then
+            echo "No changes to commit"
+          else
+            git add README.md
+            git commit -m "Update blog cards with latest posts"
+            git push
+            echo "Successfully committed and pushed changes"
+          fi
