@@ -46,6 +46,17 @@ I'm a Cloud Engineer focused on Azure, Infrastructure as Code, and automation. T
 
 <img src="assets/wave-divider.svg" width="100%"/>
 
+## 🚀 Currently Working On
+<img src="https://img.shields.io/badge/Focus-AI%20Tools-FF6B6B?style=flat-square"/> <img src="https://img.shields.io/badge/Status-Learning-4ECDC4?style=flat-square"/>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Claude-AI-7B42BC?style=for-the-badge&logo=anthropic&logoColor=white"/>
+  <img src="https://img.shields.io/badge/GitHub-Copilot-2088FF?style=for-the-badge&logo=github&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Machine-Learning-FF6B6B?style=for-the-badge&logo=python&logoColor=white"/>
+</p>
+
+<img src="assets/wave-divider.svg" width="100%"/>
+
 ## 📈 Contribution Activity
 <img src="https://img.shields.io/badge/2026-Active-00FF41?style=flat-square"/> <img src="https://img.shields.io/badge/Streak-Building-FF6B6B?style=flat-square"/>
 
@@ -125,7 +136,7 @@ I'm a Cloud Engineer focused on Azure, Infrastructure as Code, and automation. T
 <img src="assets/wave-divider.svg" width="100%"/>
 
 ## 🌐 Connect
-<img src="https://img.shields.io/badge/Always-Open%20to%20Connect-9B59B6?style=flat-square"/> <img src="https://img.shields.io/badge/Response-Within%2024h-3498DB?style=flat-square"/>
+<img src="https://img.shields.io/badge/Always-Open%20to%20Connect-9B59B6?style=flat-square"/>
 
 <p align="center">
   <sub>Let's connect and collaborate</sub>
