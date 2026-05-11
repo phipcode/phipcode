@@ -1,12 +1,18 @@
+<img src="assets/grid-border.svg" width="100%"/>
+
 <p align="center">
   <img src="https://phiptech.com/content/images/size/w2000/2024/10/Publication-cover-edit-2.png" width="800"/>
+</p>
+
+<p align="center">
+  <img src="https://komarev.com/ghpvc/?username=phipcode&color=00ff41&style=flat-square&label=Profile+Views"/>
 </p>
 
 ---
 
 <table>
 <tr>
-<td width="60%" valign="top">
+<td width="50%" valign="top">
 
 # Hi, I'm Phi 👋
 
@@ -16,6 +22,8 @@
   <img src="https://img.shields.io/badge/Azure-Cloud-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white"/>
   <img src="https://img.shields.io/badge/Terraform-IaC-7B42BC?style=for-the-badge&logo=terraform&logoColor=white"/>
   <img src="https://img.shields.io/badge/Bicep-IaC-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white"/>
+</p>
+<p>
   <img src="https://img.shields.io/badge/GitHub-Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white"/>
   <img src="https://img.shields.io/badge/Docker-Containers-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
   <img src="https://img.shields.io/badge/Proxmox-HomeLab-E57000?style=for-the-badge&logo=proxmox&logoColor=white"/>
@@ -24,11 +32,13 @@
 I'm a Cloud Engineer focused on Azure, Infrastructure as Code, and automation. This is my **engineering journal** — documenting what I build, what breaks, what I learn, and how I fix it.
 
 </td>
-<td width="40%" valign="top">
+<td width="50%" valign="top">
 
-<img src="https://github-readme-stats.vercel.app/api?username=phipcode&show_icons=true&theme=radical&hide_border=true&count_private=true"/>
+<img src="https://github-readme-stats-git-masterrstaa-rickstaa.vercel.app/api?username=phipcode&show_icons=true&theme=radical&hide_border=true&count_private=true&include_all_commits=true"/>
 
-<img src="https://streak-stats.demolab.com?user=phipcode&theme=radical&hide_border=true"/>
+<img src="https://github-readme-streak-stats.herokuapp.com?user=phipcode&theme=radical&hide_border=true&date_format=M%20j%5B%2C%20Y%5D&card_width=467"/>
+
+<img src="https://github-readme-stats-git-masterrstaa-rickstaa.vercel.app/api/top-langs/?username=phipcode&layout=compact&theme=radical&hide_border=true&langs_count=6"/>
 
 </td>
 </tr>
@@ -127,3 +137,5 @@ I'm a Cloud Engineer focused on Azure, Infrastructure as Code, and automation. T
 </p>
 
 > "I build cloud systems, break them, fix them, and document everything along the way."
+
+<img src="assets/grid-border.svg" width="100%"/>
