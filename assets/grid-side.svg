@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="40" preserveAspectRatio="none">
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="800" preserveAspectRatio="none">
 <defs>
-<linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+<linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
 <stop offset="0%" style="stop-color:#667eea;stop-opacity:1">
 <animate attributeName="stop-color" values="#667eea;#764ba2;#f093fb;#4facfe;#00f2fe;#667eea" dur="5s" repeatCount="indefinite"/>
 </stop>
@@ -18,5 +18,5 @@
 </stop>
 </linearGradient>
 </defs>
-<path d="M0,20 Q300,0 600,20 T1200,20 L1200,40 Q900,40 600,20 T0,40 Z" fill="url(#grad1)"/>
+<path d="M20,0 Q0,200 20,400 T20,800 L40,800 Q40,600 20,400 T40,0 Z" fill="url(#grad2)"/>
 </svg>

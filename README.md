@@ -1,5 +1,10 @@
 <img src="assets/grid-border.svg" width="100%"/>
 
+<table border="0" width="100%">
+<tr>
+<td width="40"><img src="assets/grid-side.svg" height="100%"/></td>
+<td>
+
 <p align="center">
   <img src="https://phiptech.com/content/images/size/w2000/2024/10/Publication-cover-edit-2.png" width="100%" />
 </p>
@@ -28,9 +33,9 @@ I'm a Cloud Engineer focused on Azure, Infrastructure as Code, and automation. T
 </td>
 <td width="40%" valign="top">
 
-<img src="https://github-readme-stats.vercel.app/api?username=phipcode&show_icons=true&theme=radical&hide_border=true" width="100%"/>
+<img src="https://github-readme-stats.vercel.app/api?username=phipcode&show_icons=true&theme=radical&hide_border=true&count_private=true" width="100%"/>
 
-<img src="https://github-readme-streak-stats.herokuapp.com?user=phipcode&theme=radical&hide_border=true" width="100%"/>
+<img src="https://streak-stats.demolab.com?user=phipcode&theme=radical&hide_border=true" width="100%"/>
 
 </td>
 </tr>
@@ -61,7 +66,7 @@ I'm a Cloud Engineer focused on Azure, Infrastructure as Code, and automation. T
   <a href="https://x.com/YOURPROFILE">
     <img src="https://img.shields.io/badge/X-Follow-000000?style=for-the-badge&logo=x&logoColor=white" height="40"/>
   </a>
-  <a href="https://phiptech.com/rss/">
+  <a href="https://phiptech.com/#/portal/">
     <img src="https://img.shields.io/badge/RSS-Subscribe-FFA500?style=for-the-badge&logo=rss&logoColor=white" height="40"/>
   </a>
   <a href="https://github.com/phipcode">
@@ -70,5 +75,10 @@ I'm a Cloud Engineer focused on Azure, Infrastructure as Code, and automation. T
 </p>
 
 > "I build cloud systems, break them, fix them, and document everything along the way."
+
+</td>
+<td width="40"><img src="assets/grid-side.svg" height="100%"/></td>
+</tr>
+</table>
 
 <img src="assets/grid-border.svg" width="100%"/>
