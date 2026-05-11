@@ -4,21 +4,17 @@
   <img src="https://phiptech.com/content/images/size/w2000/2024/10/Publication-cover-edit-2.png" width="800"/>
 </p>
 
-<p align="center">
-  <img src="https://komarev.com/ghpvc/?username=phipcode&color=00ff41&style=flat-square&label=Profile+Views"/>
-</p>
-
 <img src="assets/wave-divider.svg" width="100%"/>
 
 <table>
 <tr>
 <td width="50%" valign="top">
 
-# 👋 Hi, I'm Phi
+## 👋 Hi, I'm Phi
 
 <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=22&duration=3000&pause=1000&color=00FF41&vCenter=true&width=435&lines=Cloud+Engineer;Azure+Specialist;IaC+Enthusiast;HomeLab+Tinkerer" alt="Typing SVG" /></a>
 
-### 🛠️ Technologies
+## 🛠️ Technologies
 
 <p>
   <img src="https://img.shields.io/badge/Azure-Cloud-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white"/>
@@ -36,7 +32,7 @@ I'm a Cloud Engineer focused on Azure, Infrastructure as Code, and automation. T
 </td>
 <td width="50%" valign="top">
 
-### 📊 GitHub Stats
+## 📊 GitHub Stats
 
 <img src="https://github-readme-stats-git-masterrstaa-rickstaa.vercel.app/api?username=phipcode&show_icons=true&theme=radical&hide_border=true&count_private=true&include_all_commits=true"/>
 
