@@ -17,14 +17,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Bypass Cloudflare for GitHub Action
-        uses: xiaotianxt/bypass-cloudflare-for-github-action@v2.1.0
-        with:
-          cf_account_id: ${{ secrets.CF_ACCOUNT_ID }}
-          cf_zone_id: ${{ secrets.CF_ZONE_ID }}
-          cf_api_token: ${{ secrets.CF_API_TOKEN }}
-
       - name: Generate Neon Blog Cards from RSS Feed
         run: |
           curl -fsSL --connect-timeout 15 --max-time 60 https://phiptech.com/feed/ -o feed.xml
