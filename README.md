@@ -40,6 +40,37 @@ I use it to document:
 ## 📝 Latest From the Blog
 
 <!-- BLOG-CARDS:START -->
+
+<p align="center">
+  <a href="https://phiptech.com/how-to-add-google-drive-to-proxmox-using-rclone/">
+    <img src="https://img.shields.io/badge/How%20to%20Add%20Google%20Drive%20to%20Proxmox%20Using%20Rclone-Read%20Post-00FF41?style=for-the-badge&logo=ghost&logoColor=000000"/>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://phiptech.com/real-time-monitoring-with-grafana-loki-and-promtail-a-complete-guide/">
+    <img src="https://img.shields.io/badge/How%20to%20Set%20Up%20Real-Time%20Log%20Monitoring%20with%20Grafan-Read%20Post-00D9FF?style=for-the-badge&logo=ghost&logoColor=000000"/>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://phiptech.com/create-a-private-container-registry-in-azure-for-bicep-modules/">
+    <img src="https://img.shields.io/badge/Create%20an%20Azure%20Container%20Registry%28ACR%29%20in%20Azure%20f-Read%20Post-FF00FF?style=for-the-badge&logo=ghost&logoColor=000000"/>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://phiptech.com/how-to-set-up-an-mcp-server-for-github-copilot-in-vs-code/">
+    <img src="https://img.shields.io/badge/How%20to%20Set%20Up%20an%20MCP%20Server%20for%20GitHub%20Copilot%20in%20-Read%20Post-FFD700?style=for-the-badge&logo=ghost&logoColor=000000"/>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://phiptech.com/how-to-set-up-ntfy-for-push-notifications-using-docker/">
+    <img src="https://img.shields.io/badge/How%20to%20Set%20Up%20Ntfy%20for%20Push%20Notifications%20Using%20Do-Read%20Post-FF1493?style=for-the-badge&logo=ghost&logoColor=000000"/>
+  </a>
+</p>
+
 <!-- BLOG-CARDS:END -->
 
 ---
