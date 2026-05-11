@@ -9,8 +9,6 @@
   <img src="https://phiptech.com/content/images/size/w2000/2024/10/Publication-cover-edit-2.png" width="100%" />
 </p>
 
-<img src="assets/grid-border.svg" width="100%"/>
-
 <table border="0" width="100%">
 <tr>
 <td width="60%" valign="top">
@@ -41,18 +39,18 @@ I'm a Cloud Engineer focused on Azure, Infrastructure as Code, and automation. T
 </tr>
 </table>
 
-<img src="assets/grid-border.svg" width="100%"/>
+<br/>
 
 <img src="https://github-readme-activity-graph.vercel.app/graph?username=phipcode&theme=react-dark&bg_color=0d1117&color=00ff41&line=00d9ff&point=ff00ff&area=true&hide_border=true" width="100%"/>
 
-<img src="assets/grid-border.svg" width="100%"/>
+<br/>
 
 ## 📝 Latest From the Blog
 
 <!-- BLOG-CARDS:START -->
 <!-- BLOG-CARDS:END -->
 
-<img src="assets/grid-border.svg" width="100%"/>
+<br/>
 
 ## 🌐 Connect
 
@@ -60,7 +58,7 @@ I'm a Cloud Engineer focused on Azure, Infrastructure as Code, and automation. T
   <a href="https://phiptech.com">
     <img src="https://img.shields.io/badge/Blog-phiptech.com-000?style=for-the-badge&logo=ghost&logoColor=white&labelColor=000&color=00FF41" height="40"/>
   </a>
-  <a href="https://linkedin.com/in/YOURPROFILE">
+  <a href="https://www.linkedin.com/in/phi-pham-4070b397/">
     <img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" height="40"/>
   </a>
   <a href="https://x.com/YOURPROFILE">
