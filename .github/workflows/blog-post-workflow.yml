@@ -32,8 +32,8 @@ jobs:
             echo "Failed to disable Bot Fight Mode (HTTP $http_code)"
             exit 1
           fi
-          echo "Waiting 5s for propagation..."
-          sleep 5
+          echo "Waiting 15s for propagation..."
+          sleep 15
 
       - name: Fetch RSS Feed
         run: |
@@ -53,23 +53,19 @@ jobs:
           import shutil
           import math
           from email.utils import parsedate_to_datetime
-          from datetime import datetime
 
-          # Clean and create thumbnails directory
           if os.path.exists("assets/blog-thumbnails"):
               shutil.rmtree("assets/blog-thumbnails")
           os.makedirs("assets/blog-thumbnails", exist_ok=True)
 
-          # Read and clean feed
           with open("feed.xml", "r", encoding="utf-8", errors="replace") as f:
               feed_xml = f.read()
           feed_xml = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F]", "", feed_xml)
 
-          # Define namespaces
           ns = {
               "content": "http://purl.org/rss/1.0/modules/content/",
-              "media": "http://search.yahoo.com/mrss/",
-              "dc": "http://purl.org/dc/elements/1.1/",
+              "media":   "http://search.yahoo.com/mrss/",
+              "dc":      "http://purl.org/dc/elements/1.1/",
           }
 
           try:
@@ -79,44 +75,33 @@ jobs:
               print(f"Error: XML parsing failed ({e})")
               exit(1)
 
-          # Process items
           posts = []
           for idx, item in enumerate(items):
-              # Extract title
               title_node = item.find("title")
               title = title_node.text if title_node is not None and title_node.text else "Blog Post"
               title = re.sub(r"<[^>]+>", "", title).strip()
 
-              # Extract link
               link_node = item.find("link")
               link = link_node.text if link_node is not None and link_node.text else "#"
 
-              # Extract pubDate
               pubdate_node = item.find("pubDate")
               date_str = "Recent"
               if pubdate_node is not None and pubdate_node.text:
                   try:
                       dt = parsedate_to_datetime(pubdate_node.text)
                       date_str = dt.strftime("%b %d, %Y")
-                  except:
+                  except Exception:
                       date_str = "Recent"
 
-              # Extract content for reading time
               content_node = item.find("content:encoded", ns)
               reading_time = "5 min"
               if content_node is not None and content_node.text:
-                  content_text = re.sub(r"<[^>]+>", "", content_node.text)
-                  word_count = len(content_text.split())
-                  minutes = max(1, math.ceil(word_count / 200))
-                  reading_time = f"{minutes} min"
+                  word_count = len(re.sub(r"<[^>]+>", "", content_node.text).split())
+                  reading_time = f"{max(1, math.ceil(word_count / 200))} min"
 
-              # Extract image URL
               media_node = item.find("media:content", ns)
-              image_url = None
-              if media_node is not None:
-                  image_url = media_node.get("url")
+              image_url = media_node.get("url") if media_node is not None else None
 
-              # Download image
               slug = link.rstrip("/").split("/")[-1] if link != "#" else f"post-{idx}"
               image_path = None
 
@@ -126,74 +111,63 @@ jobs:
                       if ext not in ["jpg", "jpeg", "png", "webp", "gif"]:
                           ext = "jpg"
                       local_path = f"assets/blog-thumbnails/{slug}.{ext}"
-
-                      req = urllib.request.Request(image_url, headers={
-                          "User-Agent": "Mozilla/5.0 (compatible; GitHubActions)"
-                      })
-                      with urllib.request.urlopen(req, timeout=10) as response:
+                      req = urllib.request.Request(image_url, headers={"User-Agent": "Mozilla/5.0 (compatible; GitHubActions)"})
+                      with urllib.request.urlopen(req, timeout=10) as resp:
                           with open(local_path, "wb") as f:
-                              f.write(response.read())
+                              f.write(resp.read())
                       image_path = local_path
-                      print(f"Downloaded: {image_url} -> {local_path}")
+                      print(f"Downloaded: {local_path}")
                   except Exception as e:
                       print(f"Failed to download {image_url}: {e}")
 
-              # Fallback placeholder if download failed
               if not image_path:
-                  image_path = f"https://img.shields.io/badge/📝-{urllib.parse.quote(title[:20])}-0D1117?style=for-the-badge&logo=ghost"
+                  image_path = f"https://img.shields.io/badge/-No+Image-0D1117?style=for-the-badge&logo=ghost"
 
               posts.append({
-                  "title": title[:60],
-                  "link": link,
-                  "date": date_str,
+                  "title":        title[:60],
+                  "link":         link,
+                  "date":         date_str,
                   "reading_time": reading_time,
-                  "image": image_path
+                  "image":        image_path,
               })
 
-          # Generate HTML grid (3 columns x 2 rows)
           grid_html = '<table width="100%"><tr>\n'
-
           for idx, post in enumerate(posts):
               if idx > 0 and idx % 3 == 0:
                   grid_html += '</tr><tr>\n'
-
-              grid_html += f'''
-<td width="33%" align="center" valign="top">
-  <a href="{post["link"]}">
-    <img src="{post["image"]}" width="100%" alt="{post["title"]}" />
-  </a>
-  <br />
-  <a href="{post["link"]}"><strong>{post["title"]}</strong></a>
-  <br />
-  <sub>{post["date"]} · {post["reading_time"]} read</sub>
-  <br /><br />
-  <a href="{post["link"]}">
-    <img src="https://img.shields.io/badge/-Read%20Post-00FF41?style=flat-square&logo=ghost&logoColor=000" />
-  </a>
-</td>
-'''
-
+              t = post["title"]
+              l = post["link"]
+              i = post["image"]
+              d = post["date"]
+              r = post["reading_time"]
+              grid_html += (
+                  f'<td width="33%" align="center" valign="top">\n'
+                  f'  <a href="{l}"><img src="{i}" width="100%" alt="{t}" /></a>\n'
+                  f'  <br />\n'
+                  f'  <a href="{l}"><strong>{t}</strong></a>\n'
+                  f'  <br />\n'
+                  f'  <sub>{d} &bull; {r} read</sub>\n'
+                  f'  <br /><br />\n'
+                  f'  <a href="{l}"><img src="https://img.shields.io/badge/-Read%20Post-00FF41?style=flat-square&logo=ghost&logoColor=000" /></a>\n'
+                  f'</td>\n'
+              )
           grid_html += '</tr></table>\n'
 
-          # Update README
           with open("README.md", "r", encoding="utf-8") as f:
               readme = f.read()
 
           start_tag = "<!-- BLOG-CARDS:START -->"
-          end_tag = "<!-- BLOG-CARDS:END -->"
-
+          end_tag   = "<!-- BLOG-CARDS:END -->"
           start = readme.find(start_tag)
-          end = readme.find(end_tag)
+          end   = readme.find(end_tag)
 
           if start == -1 or end == -1:
               print("Error: Could not find BLOG-CARDS tags in README.md")
               exit(1)
 
           start += len(start_tag)
-          new_readme = readme[:start] + "\n\n" + grid_html + "\n" + readme[end:]
-
           with open("README.md", "w", encoding="utf-8") as f:
-              f.write(new_readme)
+              f.write(readme[:start] + "\n\n" + grid_html + "\n" + readme[end:])
 
           print(f"Successfully updated README with {len(posts)} blog posts")
           PYEOF
@@ -206,8 +180,7 @@ jobs:
           if git diff --quiet README.md assets/blog-thumbnails/; then
             echo "No changes to commit"
           else
-            echo "Changes detected in README.md or blog thumbnails"
-
+            echo "Changes detected"
             if [[ "${{ github.event_name }}" == "pull_request" ]]; then
               echo "Running on PR - validation only, skipping commit/push"
               echo "✓ Workflow validation successful"
