@@ -17,9 +17,43 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Disable Bot Fight Mode
+        run: |
+          response=$(curl -s -w "\n%{http_code}" -X PUT \
+            "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/bot_management" \
+            -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"fight_mode": false}')
+          http_code=$(echo "$response" | tail -1)
+          body=$(echo "$response" | sed '$d')
+          echo "$body" | jq .
+          if [ "$http_code" != "200" ]; then
+            echo "Failed to disable Bot Fight Mode (HTTP $http_code)"
+            exit 1
+          fi
+          echo "Waiting 15s for propagation..."
+          sleep 15
+
+      - name: Fetch RSS Feed
+        run: |
+          curl -fsSL --connect-timeout 15 --max-time 60 \
+            -H "User-Agent: Mozilla/5.0 (compatible; GitHubActions; +https://github.com)" \
+            -H "Accept: application/rss+xml, application/xml, text/xml" \
+            https://phiptech.com/feed/ -o feed.xml
+
+      - name: Re-enable Bot Fight Mode
+        if: always()
+        run: |
+          curl -s -X PUT \
+            "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/bot_management" \
+            -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"fight_mode": true}' | jq .
+          echo "Bot Fight Mode re-enabled"
+
       - name: Generate Neon Blog Cards from RSS Feed
         run: |
-          curl -fsSL --connect-timeout 15 --max-time 60 https://phiptech.com/feed/ -o feed.xml
 
           python3 <<'PYEOF'
           import re
