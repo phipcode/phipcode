@@ -1,7 +1,7 @@
 <img src="assets/grid-border.svg" width="100%"/>
 
 <p align="center">
-  <img src="https://phiptech.com/content/images/size/w2000/2024/10/Publication-cover-edit-2.png" width="800"/>
+  <img src="https://phiptech.com/content/images/size/w2000/2026/05/edited_May-12--2026--01_43_59-PM.png" width="800"/>
 </p>
 
 <img src="assets/wave-divider.svg" width="100%"/>
