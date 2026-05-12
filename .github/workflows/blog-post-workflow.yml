@@ -32,8 +32,8 @@ jobs:
             echo "Failed to disable Bot Fight Mode (HTTP $http_code)"
             exit 1
           fi
-          echo "Waiting 15s for propagation..."
-          sleep 15
+          echo "Waiting 20s for propagation..."
+          sleep 20
 
       - name: Fetch RSS Feed
         run: |
